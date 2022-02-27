@@ -11,6 +11,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import axios from "axios";
 import { SWRConfig } from "swr";
 
+import LayoutWrapper from "layouts/LayoutWrapper";
 import IconButton from "@mui/material/IconButton";
 import { CustomIcon } from "components/Icons";
 
@@ -70,7 +71,9 @@ export default function MyApp(props) {
               </IconButton>
             )}
           >
-            <Component {...pageProps} />
+            <LayoutWrapper>
+              <Component {...pageProps} />
+            </LayoutWrapper>
           </SnackbarProvider>
         </SWRConfig>
       </ThemeProvider>

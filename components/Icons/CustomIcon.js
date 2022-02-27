@@ -9,7 +9,7 @@ function CustomIcon({
   active = true,
   icon,
   size = "default",
-  color,
+  color = "inherit",
   width = "auto",
   height = "auto",
   variant = "filled",
@@ -28,7 +28,7 @@ function CustomIcon({
       style={{
         width: width,
         height: height,
-        color: color ? color : "",
+        color: color ? color : "inherit",
         opacity: active ? "1" : "0.4",
         display: "flex",
         alignItems: "center",
