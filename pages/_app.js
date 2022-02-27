@@ -7,9 +7,9 @@ import { CacheProvider } from "@emotion/react";
 import theme from "theme";
 import createEmotionCache from "utils/createEmotionCache";
 import { SnackbarProvider } from "notistack";
-import { reactLocalStorage } from "reactjs-localstorage";
-import axios from "axios";
+import axios from "utils/http-anxios";
 import { SWRConfig } from "swr";
+import { isIsoDate } from "helpers/dateHelpers";
 
 import LayoutWrapper from "layouts/LayoutWrapper";
 import IconButton from "@mui/material/IconButton";
@@ -42,18 +42,15 @@ export default function MyApp(props) {
         <SWRConfig
           value={{
             fetcher: async (resource) => {
-              const accessToken = reactLocalStorage.get("access_token");
-              const fetch = await axios.get(resource, {
-                headers: { Authorization: "bearer " + accessToken },
-              });
+              const fetch = await axios.get(resource);
               const data = JSON.parse(
                 fetch.request.response,
                 function (key, value) {
-                  // if (typeof value === "string") {
-                  //   if (isIsoDate(value)) {
-                  //     return new Date(value);
-                  //   }
-                  // }
+                  if (typeof value === "string") {
+                    if (isIsoDate(value)) {
+                      return new Date(value);
+                    }
+                  }
                   return value;
                 }
               );

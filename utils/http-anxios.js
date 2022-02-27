@@ -1,20 +1,21 @@
 import axios from "axios";
 import { reactLocalStorage } from "reactjs-localstorage";
 
-const url = {
-  staging: process.env.NEXT_PUBLIC_API_URL,
-};
+const url = process.env.NEXT_PUBLIC_API_URL;
 
 const instance = axios.create({
-  baseURL: url["staging"],
+  baseURL: url,
 });
 
 const ISSERVER = typeof window === "undefined";
 instance.interceptors.request.use(
   (req) => {
-    const accessToken = ISSERVER || reactLocalStorage.get("access_token");
+    req.headers["Content-Type"] = "application/json";
 
-    accessToken && (req.headers["Authorization"] = `Bearer ${accessToken}`);
+    const jwt = ISSERVER || reactLocalStorage.get("jwt");
+    if (jwt) {
+      req.headers["Authorization"] = `Bearer ${jwt}`;
+    }
 
     return req;
   },
