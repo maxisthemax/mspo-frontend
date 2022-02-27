@@ -9,12 +9,34 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.8.1",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.4.3",
+    "axios": "^0.26.0",
+    "lodash": "^4.17.21",
+    "material-ui-popup-state": "^2.0.0",
+    "moment": "^2.29.1",
     "next": "12.1.0",
+    "next-pwa": "^5.4.4",
+    "notistack": "^2.0.3",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-lazy-load-image-component": "^1.5.1",
+    "react-perfect-scrollbar": "^1.5.8",
+    "react-responsive-carousel": "^3.2.22",
+    "reactjs-localstorage": "^1.0.1",
+    "slick-carousel": "^1.8.1",
+    "swr": "^1.2.2"
   },
   "devDependencies": {
-    "eslint": "8.10.0",
-    "eslint-config-next": "12.1.0"
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.4.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.21.4",
+    "eslint-plugin-react-hooks": "^4.0.8",
+    "prettier": "^2.1.2"
   }
 }

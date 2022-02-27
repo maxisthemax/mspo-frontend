@@ -1,3 +1,27 @@
 {
-  "extends": "next/core-web-vitals"
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "es6": true,
+    "commonjs": true
+  },
+  "globals": {
+    "process": true
+  },
+  "extends": ["eslint:recommended", "plugin:react-hooks/recommended"],
+  "parserOptions": {
+    "ecmaVersion": 9,
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "plugins": ["react"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": 0,
+    "react/jsx-uses-vars": [2],
+    "react/jsx-no-undef": "error",
+    "no-console": 1
+  }
 }
