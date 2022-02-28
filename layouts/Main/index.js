@@ -3,6 +3,7 @@ import {
   bindTrigger,
   bindMenu,
 } from "material-ui-popup-state/hooks";
+import { useRouter } from "next/router";
 
 //*components
 import { CustomIcon } from "components/Icons";
@@ -21,11 +22,15 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 
 //*const
-const pages = ["Tickets"];
+const pages = [
+  { label: "Ticket", url: "ticket" },
+  { label: "Transporter", url: "transporter" },
+];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function Main({ children }) {
   //*define
+  const router = useRouter();
   const userMenuPopupState = usePopupState({
     variant: "popover",
     popupId: "userMenu",
@@ -46,7 +51,7 @@ function Main({ children }) {
               component="div"
               sx={{ mr: 2, display: { xs: "none", md: "flex" } }}
             >
-              LOGO
+              MYEZGM
             </Typography>
 
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -62,8 +67,11 @@ function Main({ children }) {
               </IconButton>
               <Menu {...bindMenu(navPopupState)}>
                 {pages.map((page) => (
-                  <MenuItem key={page}>
-                    <Typography textAlign="center">{page}</Typography>
+                  <MenuItem
+                    key={page.url}
+                    onClick={() => router.push(page.url)}
+                  >
+                    <Typography textAlign="center">{page.label}</Typography>
                   </MenuItem>
                 ))}
               </Menu>
@@ -74,15 +82,16 @@ function Main({ children }) {
               component="div"
               sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
             >
-              LOGO
+              MYEZGM
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
                 <Button
-                  key={page}
+                  key={page.url}
                   sx={{ my: 2, color: "white", display: "block" }}
+                  onClick={() => router.push(page.url)}
                 >
-                  {page}
+                  {page.label}
                 </Button>
               ))}
             </Box>

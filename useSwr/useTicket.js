@@ -6,7 +6,7 @@ import useUser from "./useUser";
 export default function useTicket() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
-  const [sort, setSort] = useState();
+  const [sort, setSort] = useState(["createdAt:desc"]);
 
   const { data, mutate, error, isValidating } = useSwrHttp("tickets", {
     pagination: { page, pageSize },
@@ -16,10 +16,10 @@ export default function useTicket() {
 
   const { userData } = useUser();
 
-  const addTicket = async () => {
+  const addTicket = async ({ ticketNo }) => {
     await axios.post("tickets", {
       data: {
-        ticket_no: Math.random().toString(),
+        ticket_no: ticketNo,
         createdBy: userData.id,
       },
     });
