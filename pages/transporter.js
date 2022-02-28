@@ -23,9 +23,9 @@ function Ticket() {
 
   //*const
   const rowsPerPage = transporterData?.meta?.pagination?.pageSize;
-
   const total = transporterData?.meta?.pagination?.total;
 
+  //*useMemo
   const data = useMemo(() => {
     const returnData = map(transporterData?.data, (data) => ({
       id: data.id,
