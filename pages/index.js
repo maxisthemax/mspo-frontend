@@ -5,7 +5,6 @@ import { useTable, useFilters, useSortBy } from "react-table";
 import map from "lodash/map";
 
 //*components
-import { Button } from "components/Buttons";
 import { CustomIcon } from "components/Icons";
 
 //*material-ui
@@ -21,11 +20,11 @@ import TablePagination from "@mui/material/TablePagination";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
+import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 
 //*useSwr
 import useTicket from "useSwr/useTicket";
-import useUser from "useSwr/useUser";
 
 function DefaultColumnFilter({
   column: { filterValue, preFilteredRows, setFilter },
@@ -99,15 +98,12 @@ function TablePaginationActions(props) {
 export default function Home() {
   const {
     ticketData,
-    addTicket,
     setTicketPage,
     ticketPage,
     setTicketPageSize,
     setTicketSort,
     resetTicketSort,
   } = useTicket();
-
-  const { handleLogin } = useUser();
 
   //*const
   const rowsPerPage = ticketData?.meta?.pagination?.pageSize;
@@ -125,10 +121,10 @@ export default function Home() {
     const returnData = map(ticketData?.data, (data) => ({
       id: data.id,
       ...data.attributes,
+      transporter: data.attributes.transporter.data?.attributes,
     }));
     return returnData;
   }, [ticketData]);
-
   const columns = useMemo(
     () => [
       {
@@ -146,6 +142,10 @@ export default function Home() {
         accessor: "first_weight",
         disableFilters: true,
         type: "number",
+      },
+      {
+        Header: "Transporter",
+        accessor: "transporter.name",
       },
     ],
     []
@@ -188,105 +188,91 @@ export default function Home() {
   };
 
   return (
-    <Box>
-      Ticket
-      <Box>
-        <Button
-          onClick={() => {
-            handleLogin("mail@mail.com", "test123");
-          }}
-        >
-          Login
-        </Button>
-        <Button
-          onClick={() => {
-            addTicket();
-          }}
-        >
-          ADD
-        </Button>
-      </Box>
-      <TableContainer sx={{ maxHeight: "80vh" }}>
-        <Table stickyHeader size="medium" {...getTableProps()}>
-          <TableHead>
-            {
-              // Loop over the header rows
-              headerGroups.map((headerGroup) => (
-                // Apply the header row props
-                <TableRow {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => {
-                    return (
-                      <TableCell
-                        {...column.getHeaderProps}
-                        align={column.type === "number" ? "right" : "left"}
-                        sortDirection={column.isSortedDesc ? "desc" : "asc"}
+    <TableContainer component={Paper} sx={{ maxHeight: "85vh" }}>
+      <Table stickyHeader size="medium" {...getTableProps()}>
+        <TableHead>
+          {
+            // Loop over the header rows
+            headerGroups.map((headerGroup) => (
+              // Apply the header row props
+              <TableRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => {
+                  return (
+                    <TableCell
+                      {...column.getHeaderProps}
+                      align={column.type === "number" ? "right" : "left"}
+                      sortDirection={column.isSortedDesc ? "desc" : "asc"}
+                    >
+                      <TableSortLabel
+                        sx={{ width: "100%" }}
+                        {...column.getSortByToggleProps()}
+                        active={column.isSorted}
+                        direction={column.isSortedDesc ? "desc" : "asc"}
                       >
-                        <TableSortLabel
-                          sx={{ width: "100%" }}
-                          {...column.getSortByToggleProps()}
-                          active={column.isSorted}
-                          direction={column.isSortedDesc ? "desc" : "asc"}
-                        >
-                          {column.render("Header")}
-                          {column.isSorted ? (
-                            <Box component="span" sx={visuallyHidden}>
-                              {column.isSortedDesc
-                                ? "sorted descending"
-                                : "sorted ascending"}
-                            </Box>
-                          ) : null}
-                        </TableSortLabel>
-                        <div>
-                          {column.canFilter ? column.render("Filter") : null}
-                        </div>
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              ))
-            }
-          </TableHead>
-          <TableBody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row);
-              return (
-                <TableRow {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <TableCell
-                        {...cell.getCellProps()}
-                        align={cell.column.type === "number" ? "right" : "left"}
-                      >
-                        {cell.render("Cell")}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[25, 50, 100]}
-                colSpan={3}
-                count={total}
-                rowsPerPage={rowsPerPage}
-                page={ticketPage}
-                SelectProps={{
-                  inputProps: {
-                    "aria-label": "rows per page",
-                  },
-                  native: true,
-                }}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
-    </Box>
+                        {column.render("Header")}
+                        {column.isSorted ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {column.isSortedDesc
+                              ? "sorted descending"
+                              : "sorted ascending"}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                      <div>
+                        {column.canFilter ? column.render("Filter") : null}
+                      </div>
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            ))
+          }
+        </TableHead>
+        <TableBody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row);
+            return (
+              <TableRow {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <TableCell
+                      {...cell.getCellProps()}
+                      align={cell.column.type === "number" ? "right" : "left"}
+                    >
+                      {cell.render("Cell")}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+        <TableFooter>
+          <TableRow
+            sx={{
+              position: "sticky",
+              bottom: 0,
+              backgroundColor: "white",
+            }}
+          >
+            <TablePagination
+              rowsPerPageOptions={[25, 50, 100]}
+              count={total}
+              rowsPerPage={rowsPerPage}
+              page={ticketPage}
+              SelectProps={{
+                inputProps: {
+                  "aria-label": "rows per page",
+                },
+                native: true,
+              }}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </TableContainer>
   );
 }

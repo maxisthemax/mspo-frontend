@@ -38,7 +38,7 @@ function Main({ children }) {
   return (
     <>
       <AppBar position="static">
-        <Container maxWidth="xl">
+        <Container maxWidth={false}>
           <Toolbar disableGutters>
             <Typography
               variant="h6"
@@ -116,7 +116,7 @@ function Main({ children }) {
           </Toolbar>
         </Container>
       </AppBar>
-      <Container maxWidth="xl">
+      <Container maxWidth={false}>
         <Toolbar disableGutters variant="dense" />
         {children}
       </Container>

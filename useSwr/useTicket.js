@@ -11,6 +11,7 @@ export default function useTicket() {
   const { data, mutate, error, isValidating } = useSwrHttp("tickets", {
     pagination: { page, pageSize },
     sort: sort,
+    populate: "*",
   });
 
   const { userData } = useUser();
