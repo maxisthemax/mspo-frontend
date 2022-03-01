@@ -106,8 +106,8 @@ function TablePaginationActions(props) {
 function TableComponent({
   data,
   columns,
-  rowsPerPage,
-  total,
+  rowsPerPage = 0,
+  total = 0,
   page,
   setPage,
   setPageSize,
@@ -174,6 +174,7 @@ function TableComponent({
               {headerGroup.headers.map((column) => {
                 return (
                   <TableCell
+                    key={column.id}
                     {...column.getHeaderProps}
                     align={column.type === "number" ? "right" : "left"}
                     sortDirection={column.isSortedDesc ? "desc" : "asc"}
@@ -214,6 +215,7 @@ function TableComponent({
 
                   return (
                     <TableCell
+                      key={`${cell.column.id}_${cell.row.id}`}
                       {...cell.getCellProps()}
                       align={cell.column.type === "number" ? "right" : "left"}
                       onClick={cell.row.original[cell.column["click"]]}
