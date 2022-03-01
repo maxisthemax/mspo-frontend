@@ -7,6 +7,8 @@ import map from "lodash/map";
 import { TableComponent } from "components/Table";
 
 //*material-ui
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 
 //*useSwr
 import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
@@ -62,17 +64,22 @@ function Ticket() {
   );
 
   return (
-    <TableComponent
-      data={data}
-      columns={columns}
-      rowsPerPage={rowsPerPage}
-      total={total}
-      page={ticketPage}
-      setPage={setTicketPage}
-      setPageSize={setTicketPageSize}
-      setSort={setTicketSort}
-      resetSort={resetTicketSort}
-    />
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Ticket
+      </Typography>
+      <TableComponent
+        data={data}
+        columns={columns}
+        rowsPerPage={rowsPerPage}
+        total={total}
+        page={ticketPage}
+        setPage={setTicketPage}
+        setPageSize={setTicketPageSize}
+        setSort={setTicketSort}
+        resetSort={resetTicketSort}
+      />
+    </Box>
   );
 }
 export default Ticket;
