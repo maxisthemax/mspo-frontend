@@ -1,5 +1,4 @@
 import create from "zustand";
-import { devtools } from "zustand/middleware";
 
 const store = (set) => ({
   open: false,
@@ -13,6 +12,6 @@ const store = (set) => ({
   },
 });
 
-const createStore = create(devtools(store));
+const createStore = create(store);
 
 export default createStore;

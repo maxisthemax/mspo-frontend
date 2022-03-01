@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 
-//*lodash
-
 //*components
 import { CustomIcon } from "components/Icons";
 import TransporterDrawer from "pages/transporter/TransporterDrawer";
@@ -11,12 +9,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import IconButton from "@mui/material/IconButton";
 import Drawer from "@mui/material/Drawer";
 
-//*assets
-
 //*zustand
 import store from "./store";
-
-//*utils
 
 //*helpers
 import { useGetScreen } from "helpers/screenSizeHelpers";
@@ -33,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 //*custom components
 
-function GlobalDrawer({ size = 4, anchor = "right", maxHeight = "100%" }) {
+function GlobalDrawer() {
   //*define
   const width = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
   const classes = useStyles();
@@ -55,6 +49,20 @@ function GlobalDrawer({ size = 4, anchor = "right", maxHeight = "100%" }) {
     }
   }, [drawerId]);
 
+  const size = useMemo(() => {
+    switch (drawerId) {
+      default:
+        return 4;
+    }
+  }, [drawerId]);
+
+  const anchor = useMemo(() => {
+    switch (drawerId) {
+      default:
+        return "right";
+    }
+  }, [drawerId]);
+
   return (
     <Drawer
       open={open}
@@ -63,7 +71,7 @@ function GlobalDrawer({ size = 4, anchor = "right", maxHeight = "100%" }) {
       PaperProps={{
         style: {
           width: `${smDown ? 100 : width[size]}%`,
-          maxHeight: maxHeight,
+          maxHeight: "100%",
         },
       }}
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}

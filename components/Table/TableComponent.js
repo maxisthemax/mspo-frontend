@@ -24,8 +24,6 @@ import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
 import { visuallyHidden } from "@mui/utils";
 
-//*useSwr
-
 function DefaultColumnFilter({
   column: { filterValue, preFilteredRows, setFilter },
 }) {
