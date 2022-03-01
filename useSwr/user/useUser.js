@@ -1,7 +1,7 @@
 import axios from "utils/http-anxios";
 import { useRouter } from "next/router";
 import { reactLocalStorage } from "reactjs-localstorage";
-import useSwrHttp from "./useSwrHttp";
+import useSwrHttp from "useSwr/useSwrHttp";
 import { useSnackbar } from "notistack";
 
 function useUser(revalidateOnMount = true) {

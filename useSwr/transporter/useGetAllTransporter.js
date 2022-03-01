@@ -1,9 +1,9 @@
 import { useState } from "react";
 import axios from "utils/http-anxios";
-import useSwrHttp from "./useSwrHttp";
-import useUser from "./useUser";
+import useSwrHttp from "useSwr/useSwrHttp";
+import useUser from "useSwr/user/useUser";
 
-export default function useTransporter() {
+export default function useGetAllTransporter() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [sort, setSort] = useState();

@@ -23,11 +23,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 
 //*const
-const pages = [
-  { label: "Ticket", url: "ticket" },
-  { label: "Transporter", url: "transporter" },
-];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+import { pages, profileMenu } from "utils/constant";
 
 function Main({ children }) {
   //*define
@@ -116,7 +112,7 @@ function Main({ children }) {
                 }}
                 {...bindMenu(userMenuPopupState)}
               >
-                {settings.map((setting) => (
+                {profileMenu.map((setting) => (
                   <MenuItem key={setting}>
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>

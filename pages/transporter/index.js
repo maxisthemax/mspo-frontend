@@ -11,7 +11,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 //*useSwr
-import useTransporter from "useSwr/useTransporter";
+import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
 //*zustand
 import store from "components/Drawers/store";
@@ -24,7 +24,7 @@ function Ticket() {
     setTransporterPageSize,
     setTransporterSort,
     resetTransporterSort,
-  } = useTransporter();
+  } = useGetAllTransporter();
 
   //*zustand
   const openDrawer = store((state) => state.openDrawer);

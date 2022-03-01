@@ -9,7 +9,7 @@ import { TableComponent } from "components/Table";
 //*material-ui
 
 //*useSwr
-import useTicket from "useSwr/useTicket";
+import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 
 function Ticket() {
   const {
@@ -19,7 +19,7 @@ function Ticket() {
     setTicketPageSize,
     setTicketSort,
     resetTicketSort,
-  } = useTicket();
+  } = useGetAllTicket();
 
   //*const
   const rowsPerPage = ticketData?.meta?.pagination?.pageSize;
