@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 //*components
 import { CustomIcon } from "components/Icons";
+import TransporterDrawer from "pages/transporter/TransporterDrawer";
 
 //*material-ui
 import makeStyles from "@mui/styles/makeStyles";
@@ -47,7 +48,7 @@ function GlobalDrawer({ size = 4, anchor = "right", maxHeight = "100%" }) {
   const drawerChildren = useMemo(() => {
     switch (drawerId) {
       case "transporter":
-        return <div>transporter</div>;
+        return <TransporterDrawer />;
 
       default:
         return <div />;

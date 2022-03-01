@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 
 //*lodash
 import map from "lodash/map";
@@ -13,6 +13,9 @@ import Typography from "@mui/material/Typography";
 //*useSwr
 import useTransporter from "useSwr/useTransporter";
 
+//*zustand
+import store from "components/Drawers/store";
+
 function Ticket() {
   const {
     transporterData,
@@ -23,16 +26,27 @@ function Ticket() {
     resetTransporterSort,
   } = useTransporter();
 
+  //*zustand
+  const openDrawer = store((state) => state.openDrawer);
+
   //*const
   const rowsPerPage = transporterData?.meta?.pagination?.pageSize;
   const total = transporterData?.meta?.pagination?.total;
+  const handleOpenDrawer = useCallback(
+    (params) => {
+      openDrawer({ drawerId: "transporter", params: params });
+    },
+    [openDrawer]
+  );
 
   //*useMemo
   const data = useMemo(() => {
     const returnData = map(transporterData?.data, (data) => ({
       id: data.id,
       ...data.attributes,
+      handleOpenDrawer: () => handleOpenDrawer({ transporterId: data.id }),
     }));
+
     return returnData;
   }, [transporterData]);
 
@@ -46,6 +60,7 @@ function Ticket() {
       {
         Header: "Transporter Name",
         accessor: "name",
+        click: "handleOpenDrawer",
       },
     ],
     []

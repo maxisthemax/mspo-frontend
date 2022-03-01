@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 
 //*components
 import { CustomIcon } from "components/Icons";
+import { GlobalDrawer } from "components/Drawers";
 
 //*material-ui
 import AppBar from "@mui/material/AppBar";
@@ -129,6 +130,7 @@ function Main({ children }) {
         <Toolbar disableGutters variant="dense" />
         {children}
       </Container>
+      <GlobalDrawer />
     </>
   );
 }
