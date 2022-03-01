@@ -7,10 +7,10 @@ import typography from "./typography";
 
 const palette = {
   primary: {
-    main: "#978768",
+    main: "#3F382B",
   },
   secondary: {
-    main: "#687897",
+    main: "#2B323F",
   },
   error: {
     main: red.A400,
