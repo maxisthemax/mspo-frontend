@@ -24,6 +24,7 @@ function Ticket() {
     setTransporterPageSize,
     setTransporterSort,
     resetTransporterSort,
+    isValidating,
   } = useGetAllTransporter();
 
   //*zustand
@@ -71,17 +72,19 @@ function Ticket() {
       <Typography variant="h6" gutterBottom>
         Transporter
       </Typography>
-      <TableComponent
-        data={data}
-        columns={columns}
-        rowsPerPage={rowsPerPage}
-        total={total}
-        page={transporterPage}
-        setPage={setTransporterPage}
-        setPageSize={setTransporterPageSize}
-        setSort={setTransporterSort}
-        resetSort={resetTransporterSort}
-      />
+      {!isValidating && (
+        <TableComponent
+          data={data}
+          columns={columns}
+          rowsPerPage={rowsPerPage}
+          total={total}
+          page={transporterPage}
+          setPage={setTransporterPage}
+          setPageSize={setTransporterPageSize}
+          setSort={setTransporterSort}
+          resetSort={resetTransporterSort}
+        />
+      )}
     </Box>
   );
 }

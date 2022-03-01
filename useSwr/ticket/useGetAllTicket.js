@@ -4,7 +4,7 @@ import useSwrHttp from "useSwr/useSwrHttp";
 import useUser from "useSwr/user/useUser";
 
 export default function useGetAllTicket() {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(25);
   const [sort, setSort] = useState(["createdAt:desc"]);
 

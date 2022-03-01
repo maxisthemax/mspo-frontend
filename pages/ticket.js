@@ -21,6 +21,7 @@ function Ticket() {
     setTicketPageSize,
     setTicketSort,
     resetTicketSort,
+    isValidating,
   } = useGetAllTicket();
 
   //*const
@@ -68,17 +69,19 @@ function Ticket() {
       <Typography variant="h6" gutterBottom>
         Ticket
       </Typography>
-      <TableComponent
-        data={data}
-        columns={columns}
-        rowsPerPage={rowsPerPage}
-        total={total}
-        page={ticketPage}
-        setPage={setTicketPage}
-        setPageSize={setTicketPageSize}
-        setSort={setTicketSort}
-        resetSort={resetTicketSort}
-      />
+      {!isValidating && (
+        <TableComponent
+          data={data}
+          columns={columns}
+          rowsPerPage={rowsPerPage}
+          total={total}
+          page={ticketPage}
+          setPage={setTicketPage}
+          setPageSize={setTicketPageSize}
+          setSort={setTicketSort}
+          resetSort={resetTicketSort}
+        />
+      )}
     </Box>
   );
 }
