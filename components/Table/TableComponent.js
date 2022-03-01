@@ -21,6 +21,7 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
+import Link from "@mui/material/Link";
 import { visuallyHidden } from "@mui/utils";
 
 //*useSwr
@@ -209,12 +210,21 @@ function TableComponent({
             return (
               <TableRow {...row.getRowProps()}>
                 {row.cells.map((cell) => {
+                  const isClick = cell.row.original[cell.column["click"]]
+                    ? true
+                    : false;
+
                   return (
                     <TableCell
                       {...cell.getCellProps()}
                       align={cell.column.type === "number" ? "right" : "left"}
+                      onClick={cell.row.original[cell.column["click"]]}
                     >
-                      {cell.render("Cell")}
+                      {isClick ? (
+                        <Link href=" #">{cell.render("Cell")}</Link>
+                      ) : (
+                        cell.render("Cell")
+                      )}
                     </TableCell>
                   );
                 })}
