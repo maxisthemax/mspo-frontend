@@ -43,6 +43,9 @@ function useUser(revalidateOnMount = true) {
     reactLocalStorage.remove("jwt");
     mutate({}, true);
     router.replace("/");
+    enqueueSnackbar("Logout Success", {
+      variant: "success",
+    });
   }
 
   return {

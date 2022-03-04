@@ -19,14 +19,17 @@ import Menu from "@mui/material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 
 //*const
-import { pages, profileMenu } from "utils/constant";
+import { pages } from "utils/constant";
+
+//*useSwr
+import useUser from "useSwr/user/useUser";
 
 function Main({ children }) {
   //*define
+  const { handleLogout } = useUser();
   const router = useRouter();
   const userMenuPopupState = usePopupState({
     variant: "popover",
@@ -94,11 +97,9 @@ function Main({ children }) {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton {...bindTrigger(userMenuPopupState)} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
+              <IconButton {...bindTrigger(userMenuPopupState)} sx={{ p: 0 }}>
+                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+              </IconButton>
               <Menu
                 sx={{ mt: 6 }}
                 anchorOrigin={{
@@ -112,11 +113,9 @@ function Main({ children }) {
                 }}
                 {...bindMenu(userMenuPopupState)}
               >
-                {profileMenu.map((setting) => (
-                  <MenuItem key={setting}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
+                <MenuItem onClick={handleLogout}>
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>
               </Menu>
             </Box>
           </Toolbar>

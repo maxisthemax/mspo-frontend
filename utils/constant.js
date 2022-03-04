@@ -3,4 +3,4 @@ export const pages = [
   { label: "Transporter", url: "transporter" },
 ];
 
-export const profileMenu = ["Profile", "Account", "Dashboard", "Logout"];
+export const protectedRoutesPath = ["/", "/ticket", "/transporter"];

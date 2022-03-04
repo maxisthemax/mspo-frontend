@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { reactLocalStorage } from "reactjs-localstorage";
+
 //*lodash
 
 //*components
@@ -12,20 +16,32 @@ import Typography from "@mui/material/Typography";
 
 //*useSwr
 import useUser from "useSwr/user/useUser";
+const ISSERVER = typeof window === "undefined";
+
+//*zustand
 
 function Login() {
   //*define
-  const { handleLogin } = useUser();
+  const router = useRouter();
+  const { userData, handleLogin } = useUser();
+
+  //zustand
 
   //*states
 
   //*const
+  const jwt = ISSERVER || reactLocalStorage.get("jwt");
 
   //*let
 
   //*ref
 
   //*useEffect
+  useEffect(() => {
+    if (userData?.id) {
+      router.push("/");
+    }
+  }, [userData, router, jwt]);
 
   //*functions
   const onSubmit = async (event) => {
@@ -35,39 +51,41 @@ function Login() {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box width="100%" mt="50%">
-        <Box component="form" onSubmit={onSubmit} noValidate>
-          <Stack spacing={3}>
-            <Typography variant="h3">MYEZGM</Typography>
-            <Typography variant="h5">LOGIN</Typography>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email / Username"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <Button type="submit" size="large">
-              LOGIN
-            </Button>
-          </Stack>
+    !jwt && (
+      <Container component="main" maxWidth="xs">
+        <Box width="100%" mt="50%">
+          <Box component="form" onSubmit={onSubmit} noValidate>
+            <Stack spacing={3}>
+              <Typography variant="h3">MYEZGM</Typography>
+              <Typography variant="h5">LOGIN</Typography>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email / Username"
+                name="email"
+                autoComplete="email"
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+              />
+              <Button type="submit" size="large">
+                LOGIN
+              </Button>
+            </Stack>
+          </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    )
   );
 }
 

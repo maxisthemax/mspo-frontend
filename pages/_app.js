@@ -22,6 +22,7 @@ import "slick-carousel/slick/slick-theme.css";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import "../styles/globals.css";
+import PrivateRoute from "components/Auth/PrivateRoute";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -69,10 +70,12 @@ export default function MyApp(props) {
               </IconButton>
             )}
           >
-            <OverlayLoading />
-            <LayoutWrapper>
-              <Component {...pageProps} />
-            </LayoutWrapper>
+            <PrivateRoute>
+              <OverlayLoading />
+              <LayoutWrapper>
+                <Component {...pageProps} />
+              </LayoutWrapper>
+            </PrivateRoute>
           </SnackbarProvider>
         </SWRConfig>
       </ThemeProvider>
