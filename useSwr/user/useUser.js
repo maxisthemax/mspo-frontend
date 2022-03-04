@@ -31,8 +31,7 @@ function useUser(revalidateOnMount = true) {
 
       reactLocalStorage.set("jwt", resData.data.jwt);
       mutate();
-      if (router?.query?.callback) router.push(router?.query?.callback);
-      else router.back();
+      router.push("/");
     } catch (eror) {
       enqueueSnackbar(eror?.response?.statusText, {
         variant: "error",

@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
 //*zustand
-import store from "components/Drawers/store";
+import store from "components/Drawers/GlobalDrawer/store";
 
 function Ticket() {
   const {
