@@ -14,6 +14,7 @@ import { isIsoDate } from "helpers/dateHelpers";
 import LayoutWrapper from "layouts/LayoutWrapper";
 import IconButton from "@mui/material/IconButton";
 import { CustomIcon } from "components/Icons";
+import { OverlayLoading } from "components/Loading";
 
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import "slick-carousel/slick/slick.css";
@@ -68,6 +69,7 @@ export default function MyApp(props) {
               </IconButton>
             )}
           >
+            <OverlayLoading />
             <LayoutWrapper>
               <Component {...pageProps} />
             </LayoutWrapper>
