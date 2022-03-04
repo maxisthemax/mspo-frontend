@@ -14,7 +14,7 @@ import Typography from "@mui/material/Typography";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
 //*zustand
-import store from "components/Drawers/GlobalDrawer/store";
+import { globalDrawerStore } from "components/Drawers/states";
 
 function Ticket() {
   const {
@@ -28,7 +28,7 @@ function Ticket() {
   } = useGetAllTransporter();
 
   //*zustand
-  const openDrawer = store((state) => state.openDrawer);
+  const openDrawer = globalDrawerStore((state) => state.openDrawer);
 
   //*const
   const rowsPerPage = transporterData?.meta?.pagination?.pageSize;

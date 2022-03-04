@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+
+//useSwr
 import useUser from "useSwr/user/useUser";
+
+//constant
 import { protectedRoutesPath } from "utils/constant";
 
 export default function PrivateRoute({ children }) {

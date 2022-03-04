@@ -42,7 +42,7 @@ function useUser(revalidateOnMount = true) {
   function handleLogout() {
     reactLocalStorage.remove("jwt");
     mutate({}, true);
-    router.replace("/");
+    router.push("/login");
     enqueueSnackbar("Logout Success", {
       variant: "success",
     });
