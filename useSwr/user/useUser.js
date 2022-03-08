@@ -29,9 +29,10 @@ function useUser() {
       mutate();
       router.push("/");
     } catch (error) {
-      enqueueSnackbar(error?.response?.data?.error?.message, {
-        variant: "error",
-      });
+      if (error)
+        enqueueSnackbar(error?.response?.data?.error?.message, {
+          variant: "error",
+        });
     }
     setIsLoading(false);
   }
