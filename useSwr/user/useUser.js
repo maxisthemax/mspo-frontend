@@ -1,26 +1,18 @@
+import { useState } from "react";
 import axios from "utils/http-anxios";
 import { useRouter } from "next/router";
 import { reactLocalStorage } from "reactjs-localstorage";
 import useSwrHttp from "useSwr/useSwrHttp";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
 
 function useUser() {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data, mutate, isValidating } = useSwrHttp(
-    "users/me",
-    {
-      populate: ["company"],
-    },
-    {
-      revalidateOnFocus: false,
-      shouldRetryOnError: false,
-      revalidateOnReconnect: false,
-    }
-  );
+  const { data, mutate, isValidating } = useSwrHttp("users/me", {
+    populate: ["company"],
+  });
 
   async function handleLogin(email, password) {
     setIsLoading(true);
