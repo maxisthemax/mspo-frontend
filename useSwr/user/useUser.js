@@ -3,23 +3,27 @@ import { useRouter } from "next/router";
 import { reactLocalStorage } from "reactjs-localstorage";
 import useSwrHttp from "useSwr/useSwrHttp";
 import { useSnackbar } from "notistack";
+import { useState } from "react";
 
-function useUser(revalidateOnMount = true) {
+function useUser() {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data, mutate, isValidating, error } = useSwrHttp(
+  const { data, mutate, isValidating } = useSwrHttp(
     "users/me",
-    {},
+    {
+      populate: ["company"],
+    },
     {
       revalidateOnFocus: false,
       shouldRetryOnError: false,
       revalidateOnReconnect: false,
-      revalidateOnMount: revalidateOnMount,
     }
   );
 
   async function handleLogin(email, password) {
+    setIsLoading(true);
     try {
       const resData = await axios.post("auth/local", {
         identifier: email,
@@ -32,29 +36,32 @@ function useUser(revalidateOnMount = true) {
       reactLocalStorage.set("jwt", resData.data.jwt);
       mutate();
       router.push("/");
-    } catch (eror) {
-      enqueueSnackbar(eror?.response?.statusText, {
+    } catch (error) {
+      enqueueSnackbar(error?.response?.data?.error?.message, {
         variant: "error",
       });
     }
+    setIsLoading(false);
   }
 
-  function handleLogout() {
+  async function handleLogout() {
+    setIsLoading(true);
     reactLocalStorage.remove("jwt");
-    mutate({}, true);
-    router.push("/login");
+    await mutate({}, true);
     enqueueSnackbar("Logout Success", {
       variant: "success",
     });
+    setIsLoading(false);
+    router.push("/login");
   }
 
   return {
     userData: data,
-    error,
-    isValidating,
+    userDataIsValidating: isValidating,
+    userDataIsLoading: isLoading,
+    mutateUserData: mutate,
     handleLogin,
     handleLogout,
-    mutate,
   };
 }
 

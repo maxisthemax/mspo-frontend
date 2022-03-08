@@ -9,15 +9,20 @@ import { protectedRoutesPath } from "utils/constant";
 
 export default function PrivateRoute({ children }) {
   const router = useRouter();
-  const { userData, isValidating } = useUser();
+  const { userData, userDataIsValidating, userDataIsLoading } = useUser();
 
   const pathIsProtected = protectedRoutesPath.indexOf(router.pathname) !== -1;
 
   useEffect(() => {
-    if (!isValidating && !userData?.id && pathIsProtected) {
+    if (
+      !userDataIsValidating &&
+      !userData?.id &&
+      pathIsProtected &&
+      !userDataIsLoading
+    ) {
       router.push("/login");
     }
-  }, [isValidating, userData?.id, pathIsProtected]);
+  }, [userDataIsValidating, userData?.id, pathIsProtected, userDataIsLoading]);
 
   if (!userData?.id && pathIsProtected) {
     return <div />;
