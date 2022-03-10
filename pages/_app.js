@@ -58,10 +58,15 @@ export default function MyApp(props) {
               );
               return data;
             },
+            errorRetryInterval: 5000,
             revalidateOnFocus: false,
+            errorRetryCount: 2,
+            revalidateIfStale: false,
+            revalidateOnReconnect: false,
           }}
         >
           <SnackbarProvider
+            preventDuplicate
             maxSnack={3}
             ref={notistackRef}
             action={(key) => (
