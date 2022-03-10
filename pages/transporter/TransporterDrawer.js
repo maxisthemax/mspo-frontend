@@ -70,41 +70,39 @@ function TransporterDrawer() {
         validateOnBlur={false}
         render={({ handleSubmit, submitting, form: { restart } }) => {
           return (
-            <>
-              <form
-                id="userForm"
-                onSubmit={(event) => {
-                  handleSubmit(event)?.then(restart);
-                }}
-                noValidate
-              >
-                <Stack spacing={2}>
-                  <TextFieldForm
-                    label="Transporter Name"
-                    name="name"
-                    required={true}
-                  />
-                  <TextFieldForm
-                    label="Vehicle No."
-                    name="vehicle_no"
-                    disabledKeycode={["Space"]}
-                  />
-                  <TextFieldForm label="Address" name="address" />
-                  <Button type="submit" size="large" disabled={submitting}>
-                    {mode === "add" ? "Create" : "Edit"}
+            <form
+              id="userForm"
+              onSubmit={(event) => {
+                handleSubmit(event)?.then(restart);
+              }}
+              noValidate
+            >
+              <Stack spacing={2}>
+                <TextFieldForm
+                  label="Transporter Name"
+                  name="name"
+                  required={true}
+                />
+                <TextFieldForm
+                  label="Vehicle No."
+                  name="vehicle_no"
+                  disabledKeycode={["Space"]}
+                />
+                <TextFieldForm label="Address" name="address" />
+                <Button type="submit" size="large" disabled={submitting}>
+                  {mode === "add" ? "Create" : "Edit"}
+                </Button>
+                {mode === "edit" && (
+                  <Button
+                    color="warning"
+                    size="large"
+                    onClick={handleOpenDialog}
+                  >
+                    DELETE
                   </Button>
-                  {mode === "edit" && (
-                    <Button
-                      color="warning"
-                      size="large"
-                      onClick={handleOpenDialog}
-                    >
-                      DELETE
-                    </Button>
-                  )}
-                </Stack>
-              </form>
-            </>
+                )}
+              </Stack>
+            </form>
           );
         }}
       />
