@@ -4,6 +4,7 @@ import { useMemo, useCallback } from "react";
 import map from "lodash/map";
 
 //*components
+import { Button } from "components/Buttons";
 import { TableComponent } from "components/Table";
 
 //*material-ui
@@ -18,21 +19,22 @@ import { globalDrawerStore } from "components/Drawers/states";
 
 function Ticket() {
   const {
-    transporterData,
-    setTransporterPage,
-    transporterPage,
-    setTransporterPageSize,
-    setTransporterSort,
-    resetTransporterSort,
-    isValidating,
+    allTransporterData,
+    setAllTransporterPage,
+    allTransporterPage,
+    setAllTransporterPageSize,
+    setAllTransporterSort,
+    resetAllTransporterSort,
+    allTransporterDataIsValidating,
+    allTransporterDataIsLoading,
   } = useGetAllTransporter();
 
   //*zustand
   const openDrawer = globalDrawerStore((state) => state.openDrawer);
 
   //*const
-  const rowsPerPage = transporterData?.meta?.pagination?.pageSize;
-  const total = transporterData?.meta?.pagination?.total;
+  const rowsPerPage = allTransporterData?.meta?.pagination?.pageSize;
+  const total = allTransporterData?.meta?.pagination?.total;
   const handleOpenDrawer = useCallback(
     (params) => {
       openDrawer({ drawerId: "transporter", params: params });
@@ -42,14 +44,15 @@ function Ticket() {
 
   //*useMemo
   const data = useMemo(() => {
-    const returnData = map(transporterData?.data, (data) => ({
+    const returnData = map(allTransporterData?.data, (data) => ({
       id: data.id,
       ...data.attributes,
-      handleOpenDrawer: () => handleOpenDrawer({ transporterId: data.id }),
+      handleOpenDrawer: () =>
+        handleOpenDrawer({ transporterId: data.id, mode: "edit" }),
     }));
 
     return returnData;
-  }, [transporterData]);
+  }, [allTransporterData]);
 
   const columns = useMemo(
     () => [
@@ -63,28 +66,45 @@ function Ticket() {
         accessor: "name",
         click: "handleOpenDrawer",
       },
+      {
+        Header: "Vehicle No.",
+        accessor: "vehicle_no",
+      },
+      {
+        Header: "Address",
+        accessor: "address",
+      },
     ],
     []
   );
+
+  //*functions
+  const handleOpenAddTransporterDrawer = () => {
+    handleOpenDrawer({ transporterId: "", mode: "add" });
+  };
 
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
         Transporter
       </Typography>
-      {!isValidating && (
-        <TableComponent
-          data={data}
-          columns={columns}
-          rowsPerPage={rowsPerPage}
-          total={total}
-          page={transporterPage}
-          setPage={setTransporterPage}
-          setPageSize={setTransporterPageSize}
-          setSort={setTransporterSort}
-          resetSort={resetTransporterSort}
-        />
-      )}
+      <Button onClick={handleOpenAddTransporterDrawer}>Add</Button>
+      <Box p={1}></Box>
+
+      <TableComponent
+        data={data}
+        columns={columns}
+        rowsPerPage={rowsPerPage}
+        total={total}
+        page={allTransporterPage}
+        setPage={setAllTransporterPage}
+        setPageSize={setAllTransporterPageSize}
+        setSort={setAllTransporterSort}
+        resetSort={resetAllTransporterSort}
+        isLoading={
+          allTransporterDataIsValidating || allTransporterDataIsLoading
+        }
+      />
     </Box>
   );
 }
