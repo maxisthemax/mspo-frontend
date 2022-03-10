@@ -65,6 +65,20 @@ export default function useGetAllTransporter() {
     setIsLoading(false);
   };
 
+  const deleteSingleTransporter = async (id) => {
+    setIsLoading(true);
+    try {
+      await axios.delete(`transporters/${id}`);
+      mutate();
+    } catch (error) {
+      if (error?.response?.data?.error?.message)
+        enqueueSnackbar(error?.response?.data?.error?.message, {
+          variant: "error",
+        });
+    }
+    setIsLoading(false);
+  };
+
   useEffect(() => {
     if (error?.response?.data?.error?.message)
       enqueueSnackbar(error?.response?.data?.error?.message, {
@@ -85,5 +99,6 @@ export default function useGetAllTransporter() {
     allTransporterSort: sort,
     setAllTransporterSort: setSort,
     resetAllTransporterSort,
+    deleteSingleTransporter,
   };
 }
