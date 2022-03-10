@@ -5,6 +5,10 @@ import useUser from "useSwr/user/useUser";
 import useGetAllTransporter from "./useGetAllTransporter";
 import { useSnackbar } from "notistack";
 
+//*lodash
+import replace from "lodash/replace";
+import upperCase from "lodash/upperCase";
+
 export default function useGetSingleTransporter(id) {
   //*define
   const { enqueueSnackbar } = useSnackbar();
@@ -28,12 +32,14 @@ export default function useGetSingleTransporter(id) {
     }
   );
 
-  const editSingleTransporter = async ({ name }) => {
+  const editSingleTransporter = async ({ name, vehicle_no, address }) => {
     setIsLoading(true);
     try {
       await axios.put(`transporters/${id}`, {
         data: {
-          name: name,
+          name,
+          vehicle_no: replace(upperCase(vehicle_no), /\s+/g, ""),
+          address,
         },
       });
       mutate();

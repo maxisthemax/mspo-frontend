@@ -4,6 +4,10 @@ import useSwrHttp from "useSwr/useSwrHttp";
 import useUser from "useSwr/user/useUser";
 import { useSnackbar } from "notistack";
 
+//*lodash
+import replace from "lodash/replace";
+import upperCase from "lodash/upperCase";
+
 export default function useGetAllTransporter() {
   //*define
   const { enqueueSnackbar } = useSnackbar();
@@ -13,7 +17,7 @@ export default function useGetAllTransporter() {
   //*useState
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(25);
-  const [sort, setSort] = useState();
+  const [sort, setSort] = useState(["name:asc"]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { data, mutate, error, isValidating } = useSwrHttp(
@@ -33,16 +37,18 @@ export default function useGetAllTransporter() {
   );
 
   const resetAllTransporterSort = () => {
-    setSort();
+    setSort(["name:asc"]);
   };
 
-  const addSingleTransporter = async ({ name }) => {
+  const addSingleTransporter = async ({ name, vehicle_no, address }) => {
     setIsLoading(true);
     try {
       await axios.post("transporters", {
         data: {
           name: name,
           company: companyId,
+          vehicle_no: replace(upperCase(vehicle_no), /\s+/g, ""),
+          address,
         },
       });
       enqueueSnackbar(`Transporter ${name} Added Success`, {
