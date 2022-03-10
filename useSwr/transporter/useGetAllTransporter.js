@@ -42,7 +42,7 @@ export default function useGetAllTransporter() {
       await axios.post("transporters", {
         data: {
           name: name,
-          createdBy: userData.id,
+          company: companyId,
         },
       });
       enqueueSnackbar(`Transporter ${name} Added Success`, {

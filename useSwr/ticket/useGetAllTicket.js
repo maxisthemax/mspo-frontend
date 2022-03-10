@@ -38,7 +38,7 @@ export default function useGetAllTicket() {
       await axios.post("tickets", {
         data: {
           ticket_no: ticketNo,
-          createdBy: userData.id,
+          company: companyId,
         },
       });
       enqueueSnackbar(`Ticket ${ticketNo} Added Success`, {
