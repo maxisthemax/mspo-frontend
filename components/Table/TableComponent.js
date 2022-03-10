@@ -23,6 +23,7 @@ import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
 import { visuallyHidden } from "@mui/utils";
+import { LinearProgress } from "@mui/material";
 
 function DefaultColumnFilter({
   column: { filterValue, preFilteredRows, setFilter },
@@ -113,6 +114,7 @@ function TableComponent({
   setPageSize,
   setSort,
   resetSort,
+  isLoading,
 }) {
   //*define
 
@@ -167,6 +169,7 @@ function TableComponent({
 
   return (
     <TableContainer component={Paper} sx={{ maxHeight: "85vh" }}>
+      {isLoading && <LinearProgress />}
       <Table stickyHeader size="medium" {...getTableProps()}>
         <TableHead>
           {headerGroups.map((headerGroup) => (
