@@ -1,6 +1,7 @@
 import { TextField } from "mui-rff";
 
 //*lodash
+import includes from "lodash/includes";
 
 //*components
 
@@ -18,7 +19,13 @@ import { TextField } from "mui-rff";
 
 //*custom components
 
-function TextFieldForm({ name, label, required, ...props }) {
+function TextFieldForm({
+  name,
+  label,
+  required,
+  disabledKeycode = [],
+  ...props
+}) {
   //*define
 
   //*states
@@ -65,6 +72,11 @@ function TextFieldForm({ name, label, required, ...props }) {
       name={name}
       showError={myShowErrorFunction}
       required={required}
+      onKeyPress={(ev) => {
+        if (includes(disabledKeycode, ev.code)) {
+          ev.preventDefault();
+        }
+      }}
       {...normalProps}
       {...props}
     />
