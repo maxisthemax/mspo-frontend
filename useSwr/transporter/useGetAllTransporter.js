@@ -5,6 +5,7 @@ import useUser from "useSwr/user/useUser";
 import { useSnackbar } from "notistack";
 
 //*lodash
+import find from "lodash/find";
 import replace from "lodash/replace";
 import upperCase from "lodash/upperCase";
 
@@ -68,7 +69,11 @@ export default function useGetAllTransporter() {
   const deleteSingleTransporter = async (id) => {
     setIsLoading(true);
     try {
+      const deletedData = find(data.data, { id: id });
       await axios.delete(`transporters/${id}`);
+      enqueueSnackbar(`Transporter ${deletedData.attributes.name} Deleted`, {
+        variant: "success",
+      });
       mutate();
     } catch (error) {
       if (error?.response?.data?.error?.message)

@@ -42,6 +42,9 @@ export default function useGetSingleTransporter(id) {
           address,
         },
       });
+      enqueueSnackbar(`Transporter ${name} Saved Success`, {
+        variant: "success",
+      });
       mutate();
       mutateAllTransporterData();
     } catch (error) {
