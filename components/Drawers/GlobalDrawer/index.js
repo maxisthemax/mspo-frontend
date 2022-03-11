@@ -3,6 +3,7 @@ import { useMemo } from "react";
 //*components
 import { CustomIcon } from "components/Icons";
 import TransporterDrawer from "pages/transporter/TransporterDrawer";
+import TicketDrawer from "pages/ticket/TicketDrawer";
 
 //*material-ui
 import makeStyles from "@mui/styles/makeStyles";
@@ -43,7 +44,8 @@ function GlobalDrawer() {
     switch (drawerId) {
       case "transporter":
         return <TransporterDrawer />;
-
+      case "ticket":
+        return <TicketDrawer />;
       default:
         return <div />;
     }

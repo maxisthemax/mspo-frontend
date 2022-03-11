@@ -32,19 +32,21 @@ export default function useGetAllTicket() {
     }
   );
 
-  const addTicket = async ({ ticketNo }) => {
+  const addSingleTicket = async ({ ticket_no, first_weight, transporter }) => {
     setIsLoading(true);
     try {
       await axios.post("tickets", {
         data: {
-          ticket_no: ticketNo,
+          ticket_no,
+          first_weight,
+          transporter,
           company: companyId,
         },
       });
-      enqueueSnackbar(`Ticket ${ticketNo} Added Success`, {
+      enqueueSnackbar(`Ticket ${ticket_no} Added Success`, {
         variant: "success",
       });
-      resetTicketSort();
+      resetAllTicketSort();
       mutate();
     } catch (error) {
       if (error?.response?.data?.error?.message)
@@ -55,7 +57,25 @@ export default function useGetAllTicket() {
     setIsLoading(false);
   };
 
-  const resetTicketSort = () => {
+  const deleteSingleTicket = async (id) => {
+    setIsLoading(true);
+    try {
+      const deletedData = find(data.data, { id: id });
+      await axios.delete(`tickets/${id}`);
+      enqueueSnackbar(`Tickets ${deletedData.attributes.ticket_no} Deleted`, {
+        variant: "success",
+      });
+      mutate();
+    } catch (error) {
+      if (error?.response?.data?.error?.message)
+        enqueueSnackbar(error?.response?.data?.error?.message, {
+          variant: "error",
+        });
+    }
+    setIsLoading(false);
+  };
+
+  const resetAllTicketSort = () => {
     setSort(["createdAt:desc"]);
   };
 
@@ -67,17 +87,18 @@ export default function useGetAllTicket() {
   }, [error]);
 
   return {
-    ticketData: data,
-    mutateTicketData: mutate,
-    ticketDataIsValidating: isValidating,
-    ticketDataIsLoading: isLoading,
-    addTicket,
-    ticketPage: page,
-    setTicketPage: setPage,
-    ticketPageSize: pageSize,
-    setTicketPageSize: setPageSize,
-    ticketSort: sort,
-    setTicketSort: setSort,
-    resetTicketSort,
+    allTicketData: data,
+    mutateAllTicketData: mutate,
+    allTicketDataIsValidating: isValidating,
+    allTicketDataIsLoading: isLoading,
+    addSingleTicket,
+    allTicketPage: page,
+    setAllTicketPage: setPage,
+    allTicketPageSize: pageSize,
+    setAllTicketPageSize: setPageSize,
+    allTicketSort: sort,
+    setAllTicketSort: setSort,
+    resetAllTicketSort,
+    deleteSingleTicket,
   };
 }

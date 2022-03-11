@@ -35,7 +35,7 @@ function Ticket() {
   //*const
   const rowsPerPage = allTransporterData?.meta?.pagination?.pageSize;
   const total = allTransporterData?.meta?.pagination?.total;
-  const handleOpenDrawer = useCallback((params) => {
+  const handleTransporterOpenDrawer = useCallback((params) => {
     openDrawer({ drawerId: "transporter", params: params });
   }, []);
 
@@ -44,8 +44,8 @@ function Ticket() {
     const returnData = map(allTransporterData?.data, (data) => ({
       id: data.id,
       ...data.attributes,
-      handleOpenDrawer: () =>
-        handleOpenDrawer({ transporterId: data.id, mode: "edit" }),
+      handleTransporterOpenDrawer: () =>
+        handleTransporterOpenDrawer({ transporterId: data.id, mode: "edit" }),
     }));
 
     return returnData;
@@ -61,7 +61,7 @@ function Ticket() {
       {
         Header: "Transporter Name",
         accessor: "name",
-        click: "handleOpenDrawer",
+        click: "handleTransporterOpenDrawer",
       },
       {
         Header: "Vehicle No.",
@@ -77,7 +77,7 @@ function Ticket() {
 
   //*functions
   const handleOpenAddTransporterDrawer = () => {
-    handleOpenDrawer({ transporterId: "", mode: "add" });
+    handleTransporterOpenDrawer({ transporterId: "", mode: "add" });
   };
 
   return (
@@ -87,7 +87,6 @@ function Ticket() {
       </Typography>
       <Button onClick={handleOpenAddTransporterDrawer}>Add</Button>
       <Box p={1}></Box>
-
       <TableComponent
         data={data}
         columns={columns}
