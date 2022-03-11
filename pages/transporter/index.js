@@ -35,12 +35,9 @@ function Ticket() {
   //*const
   const rowsPerPage = allTransporterData?.meta?.pagination?.pageSize;
   const total = allTransporterData?.meta?.pagination?.total;
-  const handleOpenDrawer = useCallback(
-    (params) => {
-      openDrawer({ drawerId: "transporter", params: params });
-    },
-    [openDrawer]
-  );
+  const handleOpenDrawer = useCallback((params) => {
+    openDrawer({ drawerId: "transporter", params: params });
+  }, []);
 
   //*useMemo
   const data = useMemo(() => {

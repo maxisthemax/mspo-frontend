@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 
 //*lodash
 import map from "lodash/map";
@@ -13,6 +13,9 @@ import Typography from "@mui/material/Typography";
 //*useSwr
 import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 
+//*zustand
+import { globalDrawerStore } from "components/Drawers/states";
+
 function Ticket() {
   const {
     ticketData,
@@ -24,17 +27,32 @@ function Ticket() {
     isValidating,
   } = useGetAllTicket();
 
+  //*zustand
+  const openDrawer = globalDrawerStore((state) => state.openDrawer);
+
   //*const
   const rowsPerPage = ticketData?.meta?.pagination?.pageSize;
   const total = ticketData?.meta?.pagination?.total;
+  const handleOpenTransporterDrawer = useCallback((params) => {
+    openDrawer({ drawerId: "transporter", params: params });
+  }, []);
 
   //*useMemo
   const data = useMemo(() => {
-    const returnData = map(ticketData?.data, (data) => ({
-      id: data.id,
-      ...data.attributes,
-      transporter: data.attributes.transporter.data?.attributes,
-    }));
+    const returnData = map(ticketData?.data, (data) => {
+      const transporterData = data.attributes.transporter.data;
+      return {
+        id: data.id,
+        ...data.attributes,
+        transporter: transporterData.attributes,
+        handleOpenTransporterDrawer: () =>
+          handleOpenTransporterDrawer({
+            transporterId: transporterData?.id,
+            mode: "edit",
+          }),
+      };
+    });
+
     return returnData;
   }, [ticketData]);
 
@@ -59,6 +77,7 @@ function Ticket() {
       {
         Header: "Transporter",
         accessor: "transporter.name",
+        click: "handleOpenTransporterDrawer",
       },
     ],
     []
