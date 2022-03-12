@@ -72,6 +72,7 @@ function TicketDrawer() {
                 handleSubmit(event)?.then(restart);
               }}
               noValidate
+              autoComplete="off"
             >
               <Stack spacing={2}>
                 <TextFieldForm
