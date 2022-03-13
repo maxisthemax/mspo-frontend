@@ -4,15 +4,16 @@ import useSwrHttp from "useSwr/useSwrHttp";
 import useUser from "useSwr/user/useUser";
 import { useSnackbar } from "notistack";
 
-export default function useGetAllTicket() {
+export default function useGetAllTicket(pageSizeDefault = 25) {
   //*define
   const { enqueueSnackbar } = useSnackbar();
   const { userData } = useUser();
   const companyId = userData?.company?.id;
 
   //*useState
+  const [search, setSearch] = useState();
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(pageSizeDefault);
   const [sort, setSort] = useState(["createdAt:desc"]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -25,6 +26,7 @@ export default function useGetAllTicket() {
             $eq: companyId || "",
           },
         },
+        ...search,
       },
       pagination: { page, pageSize },
       sort: sort,
@@ -100,5 +102,7 @@ export default function useGetAllTicket() {
     setAllTicketSort: setSort,
     resetAllTicketSort,
     deleteSingleTicket,
+    allTicketSearch: search,
+    setAllTicketSearch: setSearch,
   };
 }

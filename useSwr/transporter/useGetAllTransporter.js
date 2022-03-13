@@ -9,15 +9,16 @@ import find from "lodash/find";
 import replace from "lodash/replace";
 import upperCase from "lodash/upperCase";
 
-export default function useGetAllTransporter() {
+export default function useGetAllTransporter(pageSizeDefault = 25) {
   //*define
   const { enqueueSnackbar } = useSnackbar();
   const { userData } = useUser();
   const companyId = userData.company.id;
 
   //*useState
+  const [search, setSearch] = useState();
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(pageSizeDefault);
   const [sort, setSort] = useState(["name:asc"]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +31,7 @@ export default function useGetAllTransporter() {
             $eq: companyId || "",
           },
         },
+        ...search,
       },
       pagination: { page, pageSize },
       sort: sort,
@@ -105,5 +107,7 @@ export default function useGetAllTransporter() {
     setAllTransporterSort: setSort,
     resetAllTransporterSort,
     deleteSingleTransporter,
+    allTransporterSearch: search,
+    setAllTransporterSearch: setSearch,
   };
 }
