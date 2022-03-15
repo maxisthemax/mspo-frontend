@@ -31,7 +31,7 @@ function TicketDrawer() {
   const closeDrawer = globalDrawerStore((state) => state.closeDrawer);
   const { ticketId, mode } = globalDrawerStore((state) => state.params);
   const { addSingleTicket, deleteSingleTicket } = useGetAllTicket();
-  const { singleTicketData, editSingleTicket, singleTicketDataIsValidating } =
+  const { singleTicketData, editSingleTicket, singleTicketDataIsLoading } =
     useGetSingleTicket(ticketId);
   const dataAttribute = singleTicketData?.data?.attributes;
 
@@ -62,52 +62,69 @@ function TicketDrawer() {
       </Typography>
       <Box p={1} />
 
-      {!singleTicketDataIsValidating && (
-        <Form
-          initialValues={initialValues}
-          validate={ticketValidate}
-          onSubmit={onSubmit}
-          validateOnBlur={false}
-          render={({ handleSubmit, submitting, form: { restart } }) => {
-            return (
-              <form
-                id="ticketForm"
-                onSubmit={(event) => {
-                  handleSubmit(event)?.then(restart);
-                }}
-                noValidate
-                autoComplete="off"
-              >
-                <Stack spacing={2}>
-                  <TextFieldForm
-                    label="Ticket No"
-                    name="ticket_no"
-                    required={true}
-                  />
-                  <TextFieldForm
-                    label="First Weight"
-                    name="first_weight"
-                    type="number"
-                  />
-                  <TransporterSelect label="Transporter" name="transporter" />
-                  <Button type="submit" size="large" disabled={submitting}>
-                    {mode === "add" ? "Create" : "Edit"}
+      <Form
+        initialValues={initialValues}
+        validate={ticketValidate}
+        onSubmit={onSubmit}
+        validateOnBlur={false}
+        render={({
+          handleSubmit,
+          submitting,
+          form: { restart, change },
+          values,
+        }) => {
+          return (
+            <form
+              id="ticketForm"
+              onSubmit={(event) => {
+                handleSubmit(event)?.then(restart);
+              }}
+              noValidate
+              autoComplete="off"
+            >
+              <Stack spacing={2}>
+                <TextFieldForm
+                  disabled={singleTicketDataIsLoading}
+                  label="Ticket No"
+                  name="ticket_no"
+                  required={true}
+                />
+                <TextFieldForm
+                  disabled={singleTicketDataIsLoading}
+                  label="First Weight"
+                  name="first_weight"
+                  type="number"
+                />
+                <TransporterSelect
+                  disabled={singleTicketDataIsLoading}
+                  label="Transporter"
+                  name="transporter"
+                  defaultValue={values["transporter"]}
+                  defaultOption={dataAttribute?.transporter}
+                  change={change}
+                />
+                <Button
+                  type="submit"
+                  size="large"
+                  disabled={submitting || singleTicketDataIsLoading}
+                >
+                  {mode === "add" ? "Create" : "Edit"}
+                </Button>
+                {mode === "edit" && (
+                  <Button
+                    disabled={submitting || singleTicketDataIsLoading}
+                    color="warning"
+                    size="large"
+                    onClick={handleOpenDialog}
+                  >
+                    DELETE
                   </Button>
-                  {mode === "edit" && (
-                    <Button
-                      color="warning"
-                      size="large"
-                      onClick={handleOpenDialog}
-                    >
-                      DELETE
-                    </Button>
-                  )}
-                </Stack>
-              </form>
-            );
-          }}
-        />
-      )}
+                )}
+              </Stack>
+            </form>
+          );
+        }}
+      />
 
       <Dialog title="Delete" handleOk={handleDeleteTicket}>
         <Typography variant="h6">Are You Sure?</Typography>

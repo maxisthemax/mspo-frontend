@@ -20,7 +20,7 @@ export default function useGetAllTransporter(pageSizeDefault = 25) {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(pageSizeDefault);
   const [sort, setSort] = useState(["name:asc"]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { data, mutate, error, isValidating } = useSwrHttp(
     companyId ? "transporters" : null,
@@ -92,6 +92,10 @@ export default function useGetAllTransporter(pageSizeDefault = 25) {
         variant: "error",
       });
   }, [error]);
+
+  useEffect(() => {
+    if (data) setIsLoading(false);
+  }, [data]);
 
   return {
     allTransporterData: data,
