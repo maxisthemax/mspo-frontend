@@ -13,6 +13,8 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
 
 //*useSwr
 import useUser from "useSwr/user/useUser";
@@ -43,6 +45,7 @@ function TransporterSelect({
       },
     },
     pagination: { page: 1, pageSize: 20 },
+    sort: ["name:asc", "vehicle_no:desc"],
   });
 
   //*useState
@@ -56,7 +59,8 @@ function TransporterSelect({
         return data.data;
       }),
     ]);
-    return uniqBy(returnData, "id");
+
+    return uniqBy([defaultOption?.data, ...returnData], "id");
   }, [allTransporterData, defaultOption]);
 
   //*func
@@ -88,6 +92,7 @@ function TransporterSelect({
       >
         {data.map((option, index) => (
           <MenuItem
+            divider={defaultValue === option?.id}
             key={option?.id || index}
             value={option?.id}
             onClick={() => {
@@ -95,20 +100,28 @@ function TransporterSelect({
               handleClose();
             }}
             selected={defaultValue === option?.id}
-          >{`${option?.id} - ${option?.attributes?.name} - ${option?.attributes?.vehicle_no}`}</MenuItem>
+          >
+            <Stack direction="row">
+              <Box marginRight={2}>{`${option?.attributes?.vehicle_no}`}</Box>
+              <Box marginRight={2}>-</Box>
+              <Box>{`${option?.attributes?.name}`}</Box>
+            </Stack>
+          </MenuItem>
         ))}
-        <Button
-          disabled={totalTransporterDataPage === size || isValidating}
-          size="large"
-          fullWidth
-          onClick={(e) => {
-            e.preventDefault();
-            setSize(size + 1);
-            handleOpen();
-          }}
-        >
-          Load More
-        </Button>
+        <Box>
+          <Button
+            disabled={totalTransporterDataPage === size || isValidating}
+            size="large"
+            fullWidth
+            onClick={(e) => {
+              e.preventDefault();
+              setSize(size + 1);
+              handleOpen();
+            }}
+          >
+            Load More
+          </Button>
+        </Box>
       </Select>
     </FormControl>
   );
