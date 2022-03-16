@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo } from "react";
 
 //*lodash
 import map from "lodash/map";
@@ -15,9 +15,9 @@ import Typography from "@mui/material/Typography";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
 //*zustand
-import { globalDrawerStore } from "components/Drawers/states";
+import { store as transporterDrawerStore } from "pages/transporter";
 
-function Ticket() {
+function Transporter() {
   const {
     allTransporterData,
     setAllTransporterPage,
@@ -30,22 +30,19 @@ function Ticket() {
   } = useGetAllTransporter();
 
   //*zustand
-  const openDrawer = globalDrawerStore((state) => state.openDrawer);
+  const openDrawer = transporterDrawerStore((state) => state.openDrawer);
 
   //*const
   const rowsPerPage = allTransporterData?.meta?.pagination?.pageSize;
   const total = allTransporterData?.meta?.pagination?.total;
-  const handleTransporterOpenDrawer = useCallback((params) => {
-    openDrawer({ drawerId: "transporter", params: params });
-  }, []);
 
   //*useMemo
   const data = useMemo(() => {
     const returnData = map(allTransporterData?.data, (data) => ({
       id: data.id,
       ...data.attributes,
-      handleTransporterOpenDrawer: () =>
-        handleTransporterOpenDrawer({ transporterId: data.id, mode: "edit" }),
+      handleOpenTransporterDrawer: () =>
+        openDrawer({ params: { transporterId: data.id, mode: "edit" } }),
     }));
 
     return returnData;
@@ -61,7 +58,7 @@ function Ticket() {
       {
         Header: "Transporter Name",
         accessor: "name",
-        click: "handleTransporterOpenDrawer",
+        click: "handleOpenTransporterDrawer",
       },
       {
         Header: "Vehicle No.",
@@ -77,7 +74,7 @@ function Ticket() {
 
   //*functions
   const handleOpenAddTransporterDrawer = () => {
-    handleTransporterOpenDrawer({ transporterId: "", mode: "add" });
+    openDrawer({ params: { transporterId: "", mode: "add" } });
   };
 
   return (
@@ -104,4 +101,5 @@ function Ticket() {
     </Box>
   );
 }
-export default Ticket;
+export default Transporter;
+export { default as store } from "./TransporterDrawer/store";

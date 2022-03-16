@@ -7,7 +7,6 @@ import { useRouter } from "next/router";
 
 //*components
 import { CustomIcon } from "components/Icons";
-import { GlobalDrawer } from "components/Drawers";
 
 //*material-ui
 import AppBar from "@mui/material/AppBar";
@@ -26,6 +25,8 @@ import { pages } from "utils/constant";
 
 //*useSwr
 import useUser from "useSwr/user/useUser";
+import TransporterDrawer from "pages/transporter/TransporterDrawer";
+import TicketDrawer from "pages/ticket/TicketDrawer";
 
 function Main({ children }) {
   //*define
@@ -125,7 +126,8 @@ function Main({ children }) {
         <Toolbar disableGutters variant="dense" />
         {children}
       </Container>
-      <GlobalDrawer />
+      <TransporterDrawer />
+      <TicketDrawer />
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo } from "react";
 
 //*lodash
 import map from "lodash/map";
@@ -15,9 +15,17 @@ import Typography from "@mui/material/Typography";
 import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 
 //*zustand
-import { globalDrawerStore } from "components/Drawers/states";
+import { store as ticketDrawerStore } from "pages/ticket";
+import { store as transporterDrawerStore } from "pages/transporter";
 
 function Ticket() {
+  //*zustand
+  const openTicketDrawer = ticketDrawerStore((state) => state.openDrawer);
+  const openTransporterDrawer = transporterDrawerStore(
+    (state) => state.openDrawer
+  );
+
+  //*useSwr
   const {
     allTicketData,
     allTicketDataIsLoading,
@@ -29,18 +37,9 @@ function Ticket() {
     setAllTicketSort,
   } = useGetAllTicket();
 
-  //*zustand
-  const openDrawer = globalDrawerStore((state) => state.openDrawer);
-
   //*const
   const rowsPerPage = allTicketData?.meta?.pagination?.pageSize;
   const total = allTicketData?.meta?.pagination?.total;
-  const handleOpenTransporterDrawer = useCallback((params) => {
-    openDrawer({ drawerId: "transporter", params: params });
-  }, []);
-  const handleOpenTicketDrawer = useCallback((params) => {
-    openDrawer({ drawerId: "ticket", params: params });
-  }, []);
 
   //*useMemo
   const data = useMemo(() => {
@@ -51,14 +50,18 @@ function Ticket() {
         ...data.attributes,
         transporter: transporterData.attributes,
         handleOpenTicketDrawer: () =>
-          handleOpenTicketDrawer({
-            ticketId: data?.id,
-            mode: "edit",
+          openTicketDrawer({
+            params: {
+              ticketId: data?.id,
+              mode: "edit",
+            },
           }),
         handleOpenTransporterDrawer: () =>
-          handleOpenTransporterDrawer({
-            transporterId: transporterData?.id,
-            mode: "edit",
+          openTransporterDrawer({
+            params: {
+              transporterId: transporterData?.id,
+              mode: "edit",
+            },
           }),
       };
     });
@@ -93,9 +96,10 @@ function Ticket() {
     ],
     []
   );
+
   //*functions
   const handleOpenAddTicketDrawer = () => {
-    handleOpenTicketDrawer({ transporterId: "", mode: "add" });
+    openTransporterDrawer({ params: { transporterId: "", mode: "add" } });
   };
 
   return (
@@ -121,3 +125,4 @@ function Ticket() {
   );
 }
 export default Ticket;
+export { default as store } from "./TicketDrawer/store";
