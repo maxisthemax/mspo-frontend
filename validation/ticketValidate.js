@@ -57,33 +57,6 @@ const ticketValidate = (transporterData) =>
               });
             }
           }
-          // async (value) => {
-          //   clearTimeout(delayTimer);
-          // const data = find(
-          //   transporterData,
-          //   ({ attributes: { vehicle_no } }) => {
-          //     return vehicle_no === value;
-          //   }
-          // );
-
-          // if (data) return true;
-          // else {
-          //   const strapiUrl = getStrapiURL("transporters");
-          // const queryString = qs.stringify({
-          //   filters: {
-          //     vehicle_no: {
-          //       $eq: value,
-          //     },
-          //   },
-          // });
-          //   delayTimer = setTimeout(async () => {
-          //     data = await axios.get(`${strapiUrl}?${queryString}`);
-          //     console.log(data);
-          //   }, 5000);
-          //   console.log(data.data.data.length);
-          //   return data.data.data.length;
-          //   // }
-          // }
         ),
       transporter: Yup.string().required("Transporter Is Required").nullable(),
     })
