@@ -1,9 +1,5 @@
-import { useMemo } from "react";
-
 //*components
 import { CustomIcon } from "components/Icons";
-import TransporterDrawer from "pages/transporter/TransporterDrawer";
-import TicketDrawer from "pages/ticket/TicketDrawer";
 
 //*material-ui
 import makeStyles from "@mui/styles/makeStyles";
@@ -11,7 +7,6 @@ import IconButton from "@mui/material/IconButton";
 import Drawer from "@mui/material/Drawer";
 
 //*zustand
-import store from "./store";
 
 //*helpers
 import { useGetScreen } from "helpers/screenSizeHelpers";
@@ -28,42 +23,21 @@ const useStyles = makeStyles((theme) => ({
 
 //*custom components
 
-function GlobalDrawer() {
+function GlobalDrawer({
+  open,
+  anchor = "right",
+  size = 4,
+  closeDrawer,
+  children,
+}) {
   //*define
   const width = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
   const classes = useStyles();
   const smDown = useGetScreen("md", "down");
 
   //*zustand
-  const open = store((state) => state.open);
-  const drawerId = store((state) => state.drawerId);
-  const closeDrawer = store((state) => state.closeDrawer);
 
   //*useMemo
-  const drawerChildren = useMemo(() => {
-    switch (drawerId) {
-      case "transporter":
-        return <TransporterDrawer />;
-      case "ticket":
-        return <TicketDrawer />;
-      default:
-        return <div />;
-    }
-  }, [drawerId]);
-
-  const size = useMemo(() => {
-    switch (drawerId) {
-      default:
-        return 4;
-    }
-  }, [drawerId]);
-
-  const anchor = useMemo(() => {
-    switch (drawerId) {
-      default:
-        return "right";
-    }
-  }, [drawerId]);
 
   return (
     <Drawer
@@ -86,7 +60,7 @@ function GlobalDrawer() {
           </IconButton>
         </div>
       )}
-      {drawerChildren}
+      {children}
     </Drawer>
   );
 }
