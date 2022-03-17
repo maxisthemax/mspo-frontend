@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import useSwrHttp from "useSwr/useSwrHttp";
 import axios from "utils/http-anxios";
-import useUser from "useSwr/user/useUser";
-import useGetAllTicket from "./useGetAllTicket";
 import { useSnackbar } from "notistack";
 
-//*lodash
+//*useSwr
+import useUser from "useSwr/user/useUser";
+import useGetAllTicket from "./useGetAllTicket";
 
 export default function useGetSingleTicket(id) {
   //*define

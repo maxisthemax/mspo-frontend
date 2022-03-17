@@ -2,8 +2,10 @@ import { useState } from "react";
 import axios from "utils/http-anxios";
 import { useRouter } from "next/router";
 import { reactLocalStorage } from "reactjs-localstorage";
-import useSwrHttp from "useSwr/useSwrHttp";
 import { useSnackbar } from "notistack";
+
+//useSwr
+import useSwrHttp from "useSwr/useSwrHttp";
 
 function useUser() {
   const router = useRouter();

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "utils/http-anxios";
+import { useSnackbar } from "notistack";
+
+//*useSwr
 import useSwrHttp from "useSwr/useSwrHttp";
 import useUser from "useSwr/user/useUser";
-import { useSnackbar } from "notistack";
 
 export default function useGetAllTicket(pageSizeDefault = 25) {
   //*define

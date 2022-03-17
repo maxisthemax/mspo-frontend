@@ -3,8 +3,6 @@ import { useRouter } from "next/router";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Form } from "react-final-form";
 
-//*lodash
-
 //*components
 import { Button } from "components/Buttons";
 import { TextFieldForm } from "components/Form";
@@ -29,16 +27,8 @@ function Login() {
   const router = useRouter();
   const { userData, handleLogin } = useUser();
 
-  //zustand
-
-  //*states
-
   //*const
   const jwt = ISSERVER || reactLocalStorage.get("jwt");
-
-  //*let
-
-  //*ref
 
   //*useEffect
   useEffect(() => {

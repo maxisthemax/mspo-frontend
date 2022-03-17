@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "utils/http-anxios";
-import useSwrHttp from "useSwr/useSwrHttp";
-import useUser from "useSwr/user/useUser";
 import { useSnackbar } from "notistack";
 
 //*lodash
 import find from "lodash/find";
 import replace from "lodash/replace";
 import upperCase from "lodash/upperCase";
+
+//*useSwr
+import useSwrHttp from "useSwr/useSwrHttp";
+import useUser from "useSwr/user/useUser";
 
 export default function useGetAllTransporter(pageSizeDefault = 25) {
   //*define
