@@ -18,7 +18,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 
 //*zustand
 import ticketDrawerStore from "./store";
-import { store as transporterDrawerStore } from "pages/transporter";
+import { transporterDrawerStore } from "pages/transporter";
 
 //*validation
 import { ticketValidate } from "validation";

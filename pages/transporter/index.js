@@ -15,7 +15,7 @@ import Typography from "@mui/material/Typography";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
 //*zustand
-import { store as transporterDrawerStore } from "pages/transporter";
+import { transporterDrawerStore } from "pages/transporter";
 
 function Transporter() {
   const {
@@ -102,4 +102,4 @@ function Transporter() {
   );
 }
 export default Transporter;
-export { default as store } from "./TransporterDrawer/store";
+export { default as transporterDrawerStore } from "./TransporterDrawer/store";

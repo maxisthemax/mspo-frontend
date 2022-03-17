@@ -16,7 +16,7 @@ import Typography from "@mui/material/Typography";
 //*useSwr
 
 //*zustand
-import { store as transporterDrawerStore } from "pages/transporter";
+import { transporterDrawerStore } from "pages/transporter";
 
 //*validation
 import { transporterValidate } from "validation";
