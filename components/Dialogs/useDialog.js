@@ -16,16 +16,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
 
-//*assets
-
-//*redux
-
-//*utils
-
 //*helpers
 import { useGetScreen } from "helpers/screenSizeHelpers";
-
-//*style
 
 //*custom components
 function DialogComponent({
@@ -40,18 +32,6 @@ function DialogComponent({
 }) {
   //*define
   const smDown = useGetScreen("sm", "down");
-
-  //*states
-
-  //*const
-
-  //*let
-
-  //*ref
-
-  //*useEffect
-
-  //*functions
 
   return (
     <Dialog

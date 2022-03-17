@@ -3,22 +3,6 @@ import { TextField } from "mui-rff";
 //*lodash
 import includes from "lodash/includes";
 
-//*components
-
-//*material-ui
-
-//*assets
-
-//*redux
-
-//*utils
-
-//*helpers
-
-//*style
-
-//*custom components
-
 function TextFieldForm({
   name,
   label,
@@ -26,18 +10,6 @@ function TextFieldForm({
   disabledKeycode = [],
   ...props
 }) {
-  //*define
-
-  //*states
-
-  //*const
-
-  //*let
-
-  //*ref
-
-  //*useEffect
-
   //*functions
   const myShowErrorFunction = ({
     meta: { submitError, dirtySinceLastSubmit, error, touched },

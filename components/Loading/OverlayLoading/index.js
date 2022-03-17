@@ -5,8 +5,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 //*zustand
 import store from "./store";
 
-//*custom components
-
 function OverlayLoading() {
   //*zustand
   const open = store((state) => state.open);

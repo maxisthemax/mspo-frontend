@@ -13,7 +13,7 @@ export default function useGetAllTransporter(pageSizeDefault = 25) {
   //*define
   const { enqueueSnackbar } = useSnackbar();
   const { userData } = useUser();
-  const companyId = userData.company.id;
+  const companyId = userData?.company?.id;
 
   //*useState
   const [search, setSearch] = useState();

@@ -6,8 +6,6 @@ import makeStyles from "@mui/styles/makeStyles";
 import IconButton from "@mui/material/IconButton";
 import Drawer from "@mui/material/Drawer";
 
-//*zustand
-
 //*helpers
 import { useGetScreen } from "helpers/screenSizeHelpers";
 
@@ -21,8 +19,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-//*custom components
-
 function GlobalDrawer({
   open,
   anchor = "right",
@@ -34,10 +30,6 @@ function GlobalDrawer({
   const width = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
   const classes = useStyles();
   const smDown = useGetScreen("md", "down");
-
-  //*zustand
-
-  //*useMemo
 
   return (
     <Drawer

@@ -13,7 +13,7 @@ export default function useGetSingleTransporter(id) {
   //*define
   const { enqueueSnackbar } = useSnackbar();
   const { userData } = useUser();
-  const companyId = userData.company.id;
+  const companyId = userData?.company?.id;
   const { mutateAllTransporterData } = useGetAllTransporter();
 
   //*useState
