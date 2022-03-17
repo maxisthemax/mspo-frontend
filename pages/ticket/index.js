@@ -125,4 +125,4 @@ function Ticket() {
   );
 }
 export default Ticket;
-export { ticketDrawerStore } from "./TicketDrawer/store";
+export { default as ticketDrawerStore } from "./TicketDrawer/store";
