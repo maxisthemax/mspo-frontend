@@ -27,11 +27,12 @@ import useGetSingleTransporter from "useSwr/transporter/useGetSingleTransporter"
 
 function TransporterDrawer() {
   //*zustand
-  const open = transporterDrawerStore((state) => state.open);
-  const closeDrawer = transporterDrawerStore((state) => state.closeDrawer);
-  const { transporterId, mode } = transporterDrawerStore(
-    (state) => state.params
+  const transporterDrawerOpen = transporterDrawerStore((state) => state.open);
+  const closeTransporterDrawer = transporterDrawerStore(
+    (state) => state.closeDrawer
   );
+  const { transporterId, mode, defaultValue, closeOnAdd } =
+    transporterDrawerStore((state) => state.params);
 
   //*const
   const { Dialog, handleOpenDialog } = useDialog();
@@ -44,7 +45,9 @@ function TransporterDrawer() {
   //*const
   const initialValues =
     mode === "add"
-      ? {}
+      ? {
+          vehicle_no: defaultValue?.vehicle_no,
+        }
       : {
           name: dataAttribute?.name,
           vehicle_no: dataAttribute?.vehicle_no,
@@ -56,15 +59,22 @@ function TransporterDrawer() {
     mode === "add"
       ? await addSingleTransporter(data)
       : await editSingleTransporter(data);
+
+    if (closeOnAdd) {
+      closeTransporterDrawer();
+    }
   };
 
   const handleDeleteTransporter = async () => {
     await deleteSingleTransporter(transporterId);
-    closeDrawer();
+    closeTransporterDrawer();
   };
 
   return (
-    <GlobalDrawer open={open} closeDrawer={closeDrawer}>
+    <GlobalDrawer
+      open={transporterDrawerOpen}
+      closeDrawer={closeTransporterDrawer}
+    >
       <Box p={4}>
         <Typography variant="h6" gutterBottom>
           {mode === "add" ? "Add" : "Edit"} Transporter

@@ -74,7 +74,7 @@ function Transporter() {
 
   //*functions
   const handleOpenAddTransporterDrawer = () => {
-    openDrawer({ params: { transporterId: "", mode: "add" } });
+    openDrawer({ params: { mode: "add" } });
   };
 
   return (

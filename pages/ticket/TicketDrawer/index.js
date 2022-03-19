@@ -1,9 +1,14 @@
-import { Form } from "react-final-form";
+import { Form, Field } from "react-final-form";
+import axios from "utils/http-anxios";
+import qs from "qs";
+import { useRef, useState } from "react";
 
 //*lodash
+import find from "lodash/find";
+import toUpper from "lodash/toUpper";
 
 //*components
-import { TextFieldForm } from "components/Form";
+import { TextFieldForm, TextField } from "components/Form";
 import { Button } from "components/Buttons";
 import { useDialog } from "components/Dialogs";
 import { GlobalDrawer } from "components/Drawers";
@@ -12,9 +17,6 @@ import { GlobalDrawer } from "components/Drawers";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import InputAdornment from "@mui/material/InputAdornment";
-
-//*useSwr
 
 //*zustand
 import ticketDrawerStore from "./store";
@@ -28,9 +30,17 @@ import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 import useGetSingleTicket from "useSwr/ticket/useGetSingleTicket";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
+//*lib
+import { getStrapiURL } from "lib/api";
+
+//*helpers
+
 function TicketDrawer() {
+  //*useState
+  const [transporterFound, setTransporterFound] = useState(null);
+
   //*zustand
-  const open = ticketDrawerStore((state) => state.open);
+  const ticketDrawerOpen = ticketDrawerStore((state) => state.open);
   const { ticketId, mode } = ticketDrawerStore((state) => state.params);
   const closeTicketDrawer = ticketDrawerStore((state) => state.closeDrawer);
   const openTransporterDrawer = transporterDrawerStore(
@@ -57,13 +67,17 @@ function TicketDrawer() {
           vehicle_no:
             allTicketDataAttribute?.transporter.data?.attributes?.vehicle_no ||
             "",
-          transporter: allTicketDataAttribute?.transporter.data.id || "",
         };
-  const validate = ticketValidate(allTransporterData?.data);
+
+  //*useRef
+  const vehicleNoRef = useRef();
 
   //*function
-  const onSubmit = async (data) => {
+  const onSubmit = async (data, { restart }) => {
+    data.transporter = transporterFound.id;
     mode === "add" ? await addSingleTicket(data) : await editSingleTicket(data);
+
+    restart();
   };
 
   const handleDeleteTicket = async () => {
@@ -71,8 +85,47 @@ function TicketDrawer() {
     closeTicketDrawer();
   };
 
+  const vehicleNoCheck = async (value) => {
+    const vehicleNo = toUpper(value);
+    if (!vehicleNo) {
+      return "Vehicle No Is Required";
+    }
+
+    if (transporterFound?.attributes?.vehicle_no === vehicleNo) return;
+
+    const data = find(
+      allTransporterData?.data,
+      ({ attributes: { vehicle_no } }) => {
+        return vehicle_no === vehicleNo;
+      }
+    );
+
+    if (data) setTransporterFound(data);
+    else {
+      const strapiUrl = getStrapiURL("transporters");
+      const queryString = qs.stringify({
+        filters: {
+          vehicle_no: {
+            $eq: vehicleNo,
+          },
+        },
+      });
+
+      const { data: transporterData } = await axios.get(
+        `${strapiUrl}?${queryString}`
+      );
+
+      if (transporterData.data.length > 0) {
+        setTransporterFound(transporterData.data[0]);
+      } else {
+        setTransporterFound(null);
+        return "Vehicle No. Not Found";
+      }
+    }
+  };
+
   return (
-    <GlobalDrawer open={open} closeDrawer={closeTicketDrawer}>
+    <GlobalDrawer open={ticketDrawerOpen} closeDrawer={closeTicketDrawer}>
       <Box p={4}>
         <Typography variant="h6" gutterBottom>
           {mode === "add" ? "Add" : "Edit"} Ticket
@@ -81,15 +134,23 @@ function TicketDrawer() {
 
         <Form
           initialValues={initialValues}
-          validate={validate}
+          validate={ticketValidate}
           onSubmit={onSubmit}
-          validateOnBlur={false}
-          render={({ handleSubmit, submitting, form: { restart }, errors }) => {
+          validateOnBlur={true}
+          render={({
+            handleSubmit,
+            submitting,
+            form: { blur },
+            values,
+            errors,
+          }) => {
             return (
               <form
                 id="ticketForm"
-                onSubmit={(event) => {
-                  handleSubmit(event)?.then(restart);
+                onSubmit={async (event) => {
+                  event.preventDefault();
+                  blur("vehicle_no");
+                  await handleSubmit(event);
                 }}
                 noValidate
                 autoComplete="off"
@@ -107,29 +168,55 @@ function TicketDrawer() {
                     name="first_weight"
                     type="number"
                   />
-                  <TextFieldForm
-                    disabled={singleTicketDataIsLoading}
-                    label="Vehicle No."
-                    name="vehicle_no"
-                    InputProps={{
-                      endAdornment: errors["vehicle_no"] && (
-                        <InputAdornment position="end">
-                          <Button
-                            onClick={() =>
-                              openTransporterDrawer({
-                                params: {
-                                  transporterId: "",
-                                  mode: "add",
-                                },
-                              })
+                  <Stack direction="row" spacing={1} alignItems="baseline">
+                    <Field name="vehicle_no" validate={vehicleNoCheck}>
+                      {({ input, meta }) => {
+                        const { error, touched } = meta;
+
+                        return (
+                          <TextField
+                            disabledKeycode={["Space"]}
+                            {...input}
+                            size="small"
+                            error={error && touched}
+                            id="vehicle_no"
+                            label="Vehicle No"
+                            defaultValue="Hello World"
+                            helperText={
+                              touched &&
+                              (error
+                                ? error
+                                : `Transporter Name: ${transporterFound?.attributes?.name}`)
                             }
-                          >
-                            ADD
-                          </Button>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                            inputProps={{
+                              style: { textTransform: "uppercase" },
+                            }}
+                            inputRef={vehicleNoRef}
+                          />
+                        );
+                      }}
+                    </Field>
+                    {errors?.vehicle_no === "Vehicle No. Not Found" && (
+                      <Button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          openTransporterDrawer({
+                            params: {
+                              defaultValue: {
+                                vehicle_no: toUpper(values?.vehicle_no) || "",
+                              },
+                              mode: "add",
+                              closeOnAdd: true,
+                            },
+                          });
+                          vehicleNoRef.current.focus();
+                        }}
+                      >
+                        ADD
+                      </Button>
+                    )}
+                  </Stack>
 
                   <Button
                     type="submit"

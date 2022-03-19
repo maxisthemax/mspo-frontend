@@ -48,7 +48,7 @@ function Ticket() {
       return {
         id: data.id,
         ...data.attributes,
-        transporter: transporterData.attributes,
+        transporter: transporterData?.attributes,
         handleOpenTicketDrawer: () =>
           openTicketDrawer({
             params: {
@@ -99,7 +99,7 @@ function Ticket() {
 
   //*functions
   const handleOpenAddTicketDrawer = () => {
-    openTransporterDrawer({ params: { transporterId: "", mode: "add" } });
+    openTicketDrawer({ params: { mode: "add" } });
   };
 
   return (
