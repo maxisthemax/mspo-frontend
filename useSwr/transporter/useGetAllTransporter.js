@@ -5,7 +5,7 @@ import { useSnackbar } from "notistack";
 //*lodash
 import find from "lodash/find";
 import replace from "lodash/replace";
-import upperCase from "lodash/upperCase";
+import toUpper from "lodash/toUpper";
 
 //*useSwr
 import useSwrHttp from "useSwr/useSwrHttp";
@@ -24,6 +24,7 @@ export default function useGetAllTransporter(pageSizeDefault = 25) {
   const [sort, setSort] = useState(["name:asc"]);
   const [isLoading, setIsLoading] = useState(true);
 
+  //*useSwr
   const { data, mutate, error, isValidating } = useSwrHttp(
     companyId ? "transporters" : null,
     {
@@ -41,6 +42,7 @@ export default function useGetAllTransporter(pageSizeDefault = 25) {
     }
   );
 
+  //*function
   const resetAllTransporterSort = () => {
     setSort(["name:asc"]);
   };
@@ -52,7 +54,7 @@ export default function useGetAllTransporter(pageSizeDefault = 25) {
         data: {
           name: name,
           company: companyId,
-          vehicle_no: replace(upperCase(vehicle_no), /\s+/g, ""),
+          vehicle_no: replace(toUpper(vehicle_no), /\s+/g, ""),
           address,
         },
       });
@@ -88,6 +90,7 @@ export default function useGetAllTransporter(pageSizeDefault = 25) {
     setIsLoading(false);
   };
 
+  //*useEffect
   useEffect(() => {
     if (error?.response?.data?.error?.message)
       enqueueSnackbar(error?.response?.data?.error?.message, {

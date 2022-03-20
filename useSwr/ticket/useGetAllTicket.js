@@ -19,6 +19,7 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
   const [sort, setSort] = useState(["createdAt:desc"]);
   const [isLoading, setIsLoading] = useState(false);
 
+  //*useSwr
   const { data, mutate, error, isValidating } = useSwrHttp(
     companyId ? "tickets" : null,
     {
@@ -36,6 +37,7 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
     }
   );
 
+  //*function
   const addSingleTicket = async ({ ticket_no, first_weight, transporter }) => {
     setIsLoading(true);
     try {
@@ -83,6 +85,7 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
     setSort(["createdAt:desc"]);
   };
 
+  //*useEffect
   useEffect(() => {
     if (error?.response?.data?.error?.message)
       enqueueSnackbar(error?.response?.data?.error?.message, {

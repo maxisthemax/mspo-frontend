@@ -1,7 +1,5 @@
 import { useState, useCallback } from "react";
 
-//*lodash
-
 //*components
 import { CustomIcon } from "components/Icons";
 import { Button } from "components/Buttons";

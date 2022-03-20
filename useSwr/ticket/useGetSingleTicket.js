@@ -17,6 +17,7 @@ export default function useGetSingleTicket(id) {
   //*useState
   const [isLoading, setIsLoading] = useState(false);
 
+  //*useSwr
   const { data, mutate, error, isValidating } = useSwrHttp(
     id && companyId ? `tickets/${id}` : null,
     {
@@ -31,6 +32,7 @@ export default function useGetSingleTicket(id) {
     }
   );
 
+  //*function
   const editSingleTicket = async ({ ticket_no, first_weight, transporter }) => {
     setIsLoading(true);
     try {
@@ -55,6 +57,7 @@ export default function useGetSingleTicket(id) {
     setIsLoading(false);
   };
 
+  //*useEffect
   useEffect(() => {
     if (error?.response?.data?.error?.message)
       enqueueSnackbar(error?.response?.data?.error?.message, {

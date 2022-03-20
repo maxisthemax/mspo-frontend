@@ -8,4 +8,5 @@ const loginValidate = makeValidate(
     password: password,
   })
 );
+
 export default loginValidate;

@@ -7,7 +7,7 @@ const store = (set) => ({
     set(() => ({ open: true, params: data.params }));
   },
   closeDrawer: () => {
-    set(() => ({ open: false }));
+    set(() => ({ open: false, params: {} }));
   },
 });
 

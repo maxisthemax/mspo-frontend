@@ -1,7 +1,5 @@
 import { Form } from "react-final-form";
 
-//*lodash
-
 //*components
 import { TextFieldForm } from "components/Form";
 import { Button } from "components/Buttons";
@@ -12,8 +10,6 @@ import { GlobalDrawer } from "components/Drawers";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-
-//*useSwr
 
 //*zustand
 import { transporterDrawerStore } from "pages/transporter";
@@ -41,8 +37,6 @@ function TransporterDrawer() {
   const { singleTransporterData, editSingleTransporter } =
     useGetSingleTransporter(transporterId);
   const dataAttribute = singleTransporterData?.data?.attributes;
-
-  //*const
   const initialValues =
     mode === "add"
       ? {

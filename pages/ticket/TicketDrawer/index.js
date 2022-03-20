@@ -1,7 +1,7 @@
 import { Form, Field } from "react-final-form";
 import axios from "utils/http-anxios";
 import qs from "qs";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 //*lodash
 import find from "lodash/find";
@@ -19,7 +19,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 //*zustand
-import ticketDrawerStore from "./store";
+import { ticketDrawerStore } from "pages/ticket";
 import { transporterDrawerStore } from "pages/transporter";
 
 //*validation
@@ -32,8 +32,6 @@ import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
 //*lib
 import { getStrapiURL } from "lib/api";
-
-//*helpers
 
 function TicketDrawer() {
   //*useState
@@ -70,7 +68,6 @@ function TicketDrawer() {
         };
 
   //*useRef
-  const vehicleNoRef = useRef();
 
   //*function
   const onSubmit = async (data, { restart }) => {
@@ -191,7 +188,6 @@ function TicketDrawer() {
                             inputProps={{
                               style: { textTransform: "uppercase" },
                             }}
-                            inputRef={vehicleNoRef}
                           />
                         );
                       }}
@@ -210,7 +206,6 @@ function TicketDrawer() {
                               closeOnAdd: true,
                             },
                           });
-                          vehicleNoRef.current.focus();
                         }}
                       >
                         ADD

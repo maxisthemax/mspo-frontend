@@ -8,6 +8,7 @@ import { useSnackbar } from "notistack";
 import useSwrHttp from "useSwr/useSwrHttp";
 
 function useUser() {
+  //*define
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);

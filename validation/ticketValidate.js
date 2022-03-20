@@ -7,4 +7,5 @@ const ticketValidate = makeValidate(
     first_weight: Yup.number().required("First Weight Is Required"),
   })
 );
+
 export default ticketValidate;

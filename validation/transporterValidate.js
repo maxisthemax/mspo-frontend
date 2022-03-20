@@ -9,4 +9,5 @@ const transporterValidate = makeValidate(
       .matches(/^\S*$/, "Space is not allowed"),
   })
 );
+
 export default transporterValidate;

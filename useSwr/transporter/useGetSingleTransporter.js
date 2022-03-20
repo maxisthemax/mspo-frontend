@@ -5,7 +5,7 @@ import { useSnackbar } from "notistack";
 
 //*lodash
 import replace from "lodash/replace";
-import upperCase from "lodash/upperCase";
+import toUpper from "lodash/toUpper";
 
 //*useSwr
 import useUser from "useSwr/user/useUser";
@@ -40,7 +40,7 @@ export default function useGetSingleTransporter(id) {
       await axios.put(`transporters/${id}`, {
         data: {
           name,
-          vehicle_no: replace(upperCase(vehicle_no), /\s+/g, ""),
+          vehicle_no: replace(toUpper(vehicle_no), /\s+/g, ""),
           address,
         },
       });
