@@ -2,15 +2,16 @@ import { createTheme } from "@mui/material/styles";
 import { red } from "@mui/material/colors";
 import components from "./components";
 import typography from "./typography";
+import { primaryColor, secondaryColor } from "utils/constant";
 
 // Create a theme instance.
 
 const palette = {
   primary: {
-    main: "#3F382B",
+    main: primaryColor,
   },
   secondary: {
-    main: "#2B323F",
+    main: secondaryColor,
   },
   error: {
     main: red.A400,

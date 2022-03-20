@@ -23,7 +23,10 @@ import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
 import { visuallyHidden } from "@mui/utils";
-import { LinearProgress } from "@mui/material";
+import { Button, LinearProgress } from "@mui/material";
+
+//*utlis
+import { secondaryColor } from "utils/constant";
 
 function DefaultColumnFilter({
   column: { filterValue, preFilteredRows, setFilter },
@@ -218,13 +221,22 @@ function TableComponent({
 
                   return (
                     <TableCell
+                      component={isClick ? Button : "div"}
+                      fullWidth={isClick}
                       key={`${cell.column.id}_${cell.row.id}`}
                       {...cell.getCellProps()}
                       align={cell.column.type === "number" ? "right" : "left"}
                       onClick={cell.row.original[cell.column["click"]]}
+                      sx={{ borderRadius: "0px" }}
                     >
                       {isClick ? (
-                        <Link href=" #">{cell.render("Cell")}</Link>
+                        <Link
+                          underline="hover"
+                          href=" #"
+                          color={secondaryColor}
+                        >
+                          {cell.render("Cell")}
+                        </Link>
                       ) : (
                         cell.render("Cell")
                       )}

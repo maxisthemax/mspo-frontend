@@ -4,3 +4,6 @@ export const pages = [
 ];
 
 export const protectedRoutesPath = ["/", "/ticket", "/transporter"];
+
+export const primaryColor = "#3F382B";
+export const secondaryColor = "#2B323F";
