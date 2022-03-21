@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Form } from "react-final-form";
+import moment from "moment";
 
 //*components
 import { Button } from "components/Buttons";
@@ -25,7 +26,13 @@ import { loginValidate } from "validation";
 function Login() {
   //*define
   const router = useRouter();
-  const { userData, handleLogin } = useUser();
+  const {
+    userData,
+    handleLogin,
+    userDataIsLoading,
+    userDataIsValidating,
+    timeLeft,
+  } = useUser();
 
   //*const
   const jwt = ISSERVER || reactLocalStorage.get("jwt");
@@ -39,8 +46,11 @@ function Login() {
 
   //*functions
   const onSubmit = async (data) => {
-    await handleLogin(data.emailUsername, data.password);
+    if (!(userDataIsLoading || userDataIsValidating)) {
+      await handleLogin(data.emailUsername, data.password);
+    }
   };
+  const disabledFromLogin = timeLeft > 0;
 
   return (
     !jwt && (
@@ -56,18 +66,38 @@ function Login() {
                   <Stack spacing={3}>
                     <Typography variant="h3">MYEZGM</Typography>
                     <Typography variant="h5">LOGIN</Typography>
+                    {disabledFromLogin && (
+                      <Typography variant="warningz" color="error">
+                        Too Many Attemtps, Please Retry In{" "}
+                        {Math.floor(
+                          moment.duration(timeLeft, "milliseconds").asSeconds()
+                        )}{" "}
+                        seconds
+                      </Typography>
+                    )}
                     <TextFieldForm
+                      disabled={disabledFromLogin}
                       label="Email / Username"
                       name="emailUsername"
                       required={true}
                     />
                     <TextFieldForm
+                      disabled={disabledFromLogin}
                       label="Password"
                       name="password"
                       type="password"
                       required={true}
                     />
-                    <Button type="submit" size="large" disabled={submitting}>
+                    <Button
+                      type="submit"
+                      size="large"
+                      disabled={
+                        submitting ||
+                        userDataIsLoading ||
+                        userDataIsValidating ||
+                        disabledFromLogin
+                      }
+                    >
                       LOGIN
                     </Button>
                   </Stack>
