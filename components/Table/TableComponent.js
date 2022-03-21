@@ -21,9 +21,8 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import TextField from "@mui/material/TextField";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
-import Link from "@mui/material/Link";
 import { visuallyHidden } from "@mui/utils";
-import { Button, LinearProgress } from "@mui/material";
+import LinearProgress from "@mui/material/LinearProgress";
 
 //*utlis
 import { secondaryColor } from "utils/constant";
@@ -221,25 +220,22 @@ function TableComponent({
 
                   return (
                     <TableCell
-                      component={isClick ? Button : "div"}
-                      fullWidth={isClick}
                       key={`${cell.column.id}_${cell.row.id}`}
                       {...cell.getCellProps()}
                       align={cell.column.type === "number" ? "right" : "left"}
                       onClick={cell.row.original[cell.column["click"]]}
-                      sx={{ borderRadius: "0px" }}
+                      sx={[
+                        { borderRadius: "0px" },
+                        isClick && {
+                          cursor: "pointer",
+                          "&:hover": {
+                            color: "white",
+                            backgroundColor: secondaryColor,
+                          },
+                        },
+                      ]}
                     >
-                      {isClick ? (
-                        <Link
-                          underline="hover"
-                          href=" #"
-                          color={secondaryColor}
-                        >
-                          {cell.render("Cell")}
-                        </Link>
-                      ) : (
-                        cell.render("Cell")
-                      )}
+                      {cell.render("Cell")}
                     </TableCell>
                   );
                 })}

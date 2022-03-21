@@ -1,9 +1,9 @@
-import TextField from "@mui/material/TextField";
+import MuiTextField from "@mui/material/TextField";
 
 //*lodash
 import includes from "lodash/includes";
 
-function TextFieldForm({
+function TextField({
   name,
   label,
   required,
@@ -12,11 +12,6 @@ function TextFieldForm({
   ...props
 }) {
   //*functions
-  const myShowErrorFunction = ({
-    meta: { submitError, dirtySinceLastSubmit, error, touched },
-  }) => {
-    return !!(((submitError && !dirtySinceLastSubmit) || error) && touched);
-  };
 
   const normalizeNumber = (value) => {
     return Number(value);
@@ -35,15 +30,11 @@ function TextFieldForm({
   }
 
   return (
-    <TextField
-      fieldProps={{
-        ...fieldProps,
-      }}
+    <MuiTextField
       size="small"
       fullWidth
       label={label}
       name={name}
-      showError={myShowErrorFunction}
       required={required}
       onKeyPress={(ev) => {
         if (includes(disabledKeycode, ev.code)) {
@@ -63,4 +54,4 @@ function TextFieldForm({
   );
 }
 
-export default TextFieldForm;
+export default TextField;

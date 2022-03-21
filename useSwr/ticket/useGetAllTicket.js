@@ -38,7 +38,16 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
   );
 
   //*function
-  const addSingleTicket = async ({ ticket_no, first_weight, transporter }) => {
+  const addSingleTicket = async ({
+    ticket_no,
+    first_weight,
+    second_weight,
+    deduction,
+    nett_weight,
+    price_per_mt,
+    total_price,
+    transporter,
+  }) => {
     setIsLoading(true);
     try {
       await axios.post("tickets", {
@@ -46,6 +55,11 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
           ticket_no,
           first_weight,
           transporter,
+          second_weight,
+          deduction: deduction || 0,
+          price_per_mt,
+          total_price,
+          nett_weight,
           company: companyId,
         },
       });

@@ -33,7 +33,16 @@ export default function useGetSingleTicket(id) {
   );
 
   //*function
-  const editSingleTicket = async ({ ticket_no, first_weight, transporter }) => {
+  const editSingleTicket = async ({
+    ticket_no,
+    first_weight,
+    second_weight,
+    deduction,
+    nett_weight,
+    price_per_mt,
+    total_price,
+    transporter,
+  }) => {
     setIsLoading(true);
     try {
       await axios.put(`tickets/${id}`, {
@@ -41,6 +50,11 @@ export default function useGetSingleTicket(id) {
           ticket_no,
           transporter,
           first_weight,
+          second_weight,
+          deduction: deduction || 0,
+          nett_weight,
+          price_per_mt,
+          total_price,
         },
       });
       enqueueSnackbar(`Ticket ${ticket_no} Saved Success`, {

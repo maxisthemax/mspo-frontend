@@ -6,6 +6,7 @@ import { useState } from "react";
 //*lodash
 import find from "lodash/find";
 import toUpper from "lodash/toUpper";
+import round from "lodash/round";
 
 //*components
 import { TextFieldForm, TextField } from "components/Form";
@@ -61,10 +62,15 @@ function TicketDrawer() {
       ? {}
       : {
           ticket_no: allTicketDataAttribute?.ticket_no || "",
-          first_weight: allTicketDataAttribute?.first_weight || "",
+          first_weight: allTicketDataAttribute?.first_weight || 0,
           vehicle_no:
             allTicketDataAttribute?.transporter.data?.attributes?.vehicle_no ||
             "",
+          second_weight: allTicketDataAttribute?.second_weight || 0,
+          deduction: allTicketDataAttribute?.deduction || 0,
+          nett_weight: allTicketDataAttribute?.nett_weight || 0,
+          price_per_mt: allTicketDataAttribute?.price_per_mt || 0,
+          total_price: allTicketDataAttribute?.total_price || 0,
         };
 
   //*useRef
@@ -141,6 +147,22 @@ function TicketDrawer() {
             values,
             errors,
           }) => {
+            const {
+              first_weight,
+              second_weight,
+              deduction,
+              price_per_mt,
+              nett_weight,
+            } = values;
+            const nettWeight =
+              (first_weight || 0) - (second_weight || 0) - (deduction || 0);
+
+            values["nett_weight"] = round(nettWeight, 2);
+            values["total_price"] = round(
+              (nett_weight || 0) * (price_per_mt || 0),
+              2
+            );
+
             return (
               <form
                 id="ticketForm"
@@ -159,26 +181,19 @@ function TicketDrawer() {
                     name="ticket_no"
                     required={true}
                   />
-                  <TextFieldForm
-                    disabled={singleTicketDataIsLoading}
-                    label="First Weight"
-                    name="first_weight"
-                    type="number"
-                  />
                   <Stack direction="row" spacing={1} alignItems="baseline">
                     <Field name="vehicle_no" validate={vehicleNoCheck}>
-                      {({ input, meta }) => {
+                      {({ meta, input }) => {
                         const { error, touched } = meta;
 
                         return (
                           <TextField
-                            disabledKeycode={["Space"]}
                             {...input}
+                            disabledKeycode={["Space"]}
                             size="small"
                             error={error && touched}
                             id="vehicle_no"
                             label="Vehicle No"
-                            defaultValue="Hello World"
                             helperText={
                               touched &&
                               (error
@@ -212,7 +227,48 @@ function TicketDrawer() {
                       </Button>
                     )}
                   </Stack>
-
+                  <Stack spacing={2} direction="row">
+                    <TextFieldForm
+                      disabled={singleTicketDataIsLoading}
+                      label="First Weight"
+                      name="first_weight"
+                      type="number"
+                    />
+                    <TextFieldForm
+                      disabled={singleTicketDataIsLoading}
+                      label="Second Weight"
+                      name="second_weight"
+                      type="number"
+                    />
+                  </Stack>
+                  <Stack spacing={2} direction="row">
+                    <TextFieldForm
+                      disabled={singleTicketDataIsLoading}
+                      label="Deduction"
+                      name="deduction"
+                      type="number"
+                    />
+                    <TextFieldForm
+                      disabled={true}
+                      label="Nett Weight"
+                      name="nett_weight"
+                      type="number"
+                    />
+                  </Stack>
+                  <Stack spacing={2} direction="row">
+                    <TextFieldForm
+                      disabled={singleTicketDataIsLoading}
+                      label="Price per mt"
+                      name="price_per_mt"
+                      type="number"
+                    />
+                    <TextFieldForm
+                      disabled={true}
+                      label="Total Price"
+                      name="total_price"
+                      type="number"
+                    />
+                  </Stack>
                   <Button
                     type="submit"
                     size="large"
