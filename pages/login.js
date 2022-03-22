@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Form } from "react-final-form";
 import moment from "moment";
+import { ThreeDots } from "react-loader-spinner";
 
 //*components
 import { Button } from "components/Buttons";
@@ -26,13 +27,7 @@ import { loginValidate } from "validation";
 function Login() {
   //*define
   const router = useRouter();
-  const {
-    userData,
-    handleLogin,
-    userDataIsLoading,
-    userDataIsValidating,
-    timeLeft,
-  } = useUser();
+  const { userData, handleLogin, userDataIsLoading, timeLeft } = useUser();
 
   //*const
   const jwt = ISSERVER || reactLocalStorage.get("jwt");
@@ -46,7 +41,7 @@ function Login() {
 
   //*functions
   const onSubmit = async (data) => {
-    if (!(userDataIsLoading || userDataIsValidating)) {
+    if (!userDataIsLoading) {
       await handleLogin(data.emailUsername, data.password);
     }
   };
@@ -76,13 +71,17 @@ function Login() {
                       </Typography>
                     )}
                     <TextFieldForm
-                      disabled={disabledFromLogin}
+                      disabled={
+                        submitting || userDataIsLoading || disabledFromLogin
+                      }
                       label="Email / Username"
                       name="emailUsername"
                       required={true}
                     />
                     <TextFieldForm
-                      disabled={disabledFromLogin}
+                      disabled={
+                        submitting || userDataIsLoading || disabledFromLogin
+                      }
                       label="Password"
                       name="password"
                       type="password"
@@ -92,13 +91,15 @@ function Login() {
                       type="submit"
                       size="large"
                       disabled={
-                        submitting ||
-                        userDataIsLoading ||
-                        userDataIsValidating ||
-                        disabledFromLogin
+                        submitting || userDataIsLoading || disabledFromLogin
                       }
+                      sx={{ height: "42.5px" }}
                     >
-                      LOGIN
+                      {!userDataIsLoading ? (
+                        "LOGIN"
+                      ) : (
+                        <ThreeDots color="inherit" height="30" width="100" />
+                      )}
                     </Button>
                   </Stack>
                 </form>

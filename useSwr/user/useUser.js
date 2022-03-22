@@ -25,9 +25,14 @@ function useUser() {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data, mutate, isValidating, error } = useSwrHttp("users/me", {
-    populate: ["company"],
-  });
+  const { data, mutate, isValidating, error } = useSwrHttp(
+    "users/me",
+    {
+      populate: ["company"],
+    },
+    { errorRetryCount: 0 }
+  );
+
   const jwt = ISSERVER || reactLocalStorage.get("jwt");
   const timer_login_attempt =
     ISSERVER || reactLocalStorage.get("timer_login_attempt");
@@ -50,7 +55,8 @@ function useUser() {
     } catch (error) {
       if (error) {
         enqueueSnackbar(
-          error?.response?.data?.error?.message ||
+          error.message ||
+            error?.response?.data?.error?.message ||
             error?.response?.data?.message[0].messages[0].message,
           {
             variant: "error",
@@ -66,9 +72,8 @@ function useUser() {
             start();
           }
         }
-
-        setIsLoading(false);
       }
+      setIsLoading(false);
     }
   }
 
