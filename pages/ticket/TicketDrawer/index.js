@@ -1,7 +1,8 @@
-import { Form, Field } from "react-final-form";
+import { Form } from "react-final-form";
 import axios from "utils/http-anxios";
 import qs from "qs";
 import { useState } from "react";
+import "date-fns";
 
 //*lodash
 import find from "lodash/find";
@@ -9,7 +10,7 @@ import toUpper from "lodash/toUpper";
 import round from "lodash/round";
 
 //*components
-import { TextFieldForm, TextField } from "components/Form";
+import { TextFieldForm, TextField, DateFieldForm } from "components/Form";
 import { Button } from "components/Buttons";
 import { useDialog } from "components/Dialogs";
 import { GlobalDrawer } from "components/Drawers";
@@ -71,6 +72,7 @@ function TicketDrawer() {
           nett_weight: allTicketDataAttribute?.nett_weight || 0,
           price_per_mt: allTicketDataAttribute?.price_per_mt || 0,
           total_price: allTicketDataAttribute?.total_price || 0,
+          ticket_date: allTicketDataAttribute?.ticket_date,
         };
 
   //*useRef
@@ -181,32 +183,22 @@ function TicketDrawer() {
                     name="ticket_no"
                     required={true}
                   />
+                  <Stack spacing={2}>
+                    <DateFieldForm name="ticket_date" />
+                  </Stack>
                   <Stack direction="row" spacing={1} alignItems="baseline">
-                    <Field name="vehicle_no" validate={vehicleNoCheck}>
-                      {({ meta, input }) => {
-                        const { error, touched } = meta;
-
-                        return (
-                          <TextField
-                            {...input}
-                            disabledKeycode={["Space"]}
-                            size="small"
-                            error={error && touched}
-                            id="vehicle_no"
-                            label="Vehicle No"
-                            helperText={
-                              touched &&
-                              (error
-                                ? error
-                                : `Transporter Name: ${transporterFound?.attributes?.name}`)
-                            }
-                            inputProps={{
-                              style: { textTransform: "uppercase" },
-                            }}
-                          />
-                        );
+                    <TextField
+                      name="vehicle_no"
+                      validate={vehicleNoCheck}
+                      disabledKeycode={["Space"]}
+                      size="small"
+                      id="vehicle_no"
+                      label="Vehicle No"
+                      helperText={`Transporter Name: ${transporterFound?.attributes?.name}`}
+                      inputProps={{
+                        style: { textTransform: "uppercase" },
                       }}
-                    </Field>
+                    />
                     {errors?.vehicle_no === "Vehicle No. Not Found" && (
                       <Button
                         onClick={(e) => {

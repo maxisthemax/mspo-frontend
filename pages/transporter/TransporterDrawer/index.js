@@ -100,7 +100,12 @@ function TransporterDrawer() {
                     name="vehicle_no"
                     disabledKeycode={["Space"]}
                   />
-                  <TextFieldForm label="Address" name="address" />
+                  <TextFieldForm
+                    label="Address"
+                    name="address"
+                    multiline
+                    rows={3}
+                  />
                   <Button type="submit" size="large" disabled={submitting}>
                     {mode === "add" ? "Create" : "Edit"}
                   </Button>

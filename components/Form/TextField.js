@@ -1,3 +1,4 @@
+import { Field } from "react-final-form";
 import MuiTextField from "@mui/material/TextField";
 
 //*lodash
@@ -9,6 +10,8 @@ function TextField({
   required,
   disabledKeycode = [],
   enableUpperCaseAuto = false,
+  validate,
+  helperText,
   ...props
 }) {
   //*functions
@@ -30,27 +33,37 @@ function TextField({
   }
 
   return (
-    <MuiTextField
-      size="small"
-      fullWidth
-      label={label}
-      name={name}
-      required={required}
-      onKeyPress={(ev) => {
-        if (includes(disabledKeycode, ev.code)) {
-          ev.preventDefault();
-        }
+    <Field name={name} validate={validate}>
+      {({ meta, input }) => {
+        const { error, touched } = meta;
+        return (
+          <MuiTextField
+            {...input}
+            error={error && touched}
+            size="small"
+            fullWidth
+            label={label}
+            name={name}
+            required={required}
+            onKeyPress={(ev) => {
+              if (includes(disabledKeycode, ev.code)) {
+                ev.preventDefault();
+              }
+            }}
+            inputProps={{
+              style: {
+                textTransform: enableUpperCaseAuto ? "uppercase" : "none",
+                ...props?.inputProps?.style,
+              },
+              ...props.inputProps,
+            }}
+            helperText={touched && (error ? error : helperText)}
+            {...normalProps}
+            {...props}
+          />
+        );
       }}
-      inputProps={{
-        style: {
-          textTransform: enableUpperCaseAuto ? "uppercase" : "none",
-          ...props?.inputProps?.style,
-        },
-        ...props.inputProps,
-      }}
-      {...normalProps}
-      {...props}
-    />
+    </Field>
   );
 }
 

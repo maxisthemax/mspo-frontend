@@ -82,6 +82,12 @@ function Ticket() {
         click: "handleOpenTicketDrawer",
       },
       {
+        Header: "Ticket Date",
+        accessor: "ticket_date",
+        type: "date",
+        disableFilters: true,
+      },
+      {
         Header: "Transporter",
         accessor: "transporter",
         click: "handleOpenTransporterDrawer",
