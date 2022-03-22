@@ -275,6 +275,7 @@ function TableComponent({
                           }
                           onClick={cell.row.original[cell.column["click"]]}
                           sx={[
+                            index === 0 && { width: "10px" },
                             { borderRadius: "0px" },
                             isClick && {
                               cursor: "pointer",
