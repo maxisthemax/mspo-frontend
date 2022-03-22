@@ -47,6 +47,7 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
     price_per_mt,
     total_price,
     transporter,
+    ticket_date,
   }) => {
     setIsLoading(true);
     try {
@@ -60,6 +61,7 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
           price_per_mt,
           total_price,
           nett_weight,
+          ticket_date,
           company: companyId,
         },
       });

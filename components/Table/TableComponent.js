@@ -1,5 +1,6 @@
 import { useMemo, useEffect, useCallback, Fragment } from "react";
 import { useTable, useFilters, useSortBy, useExpanded } from "react-table";
+import moment from "moment";
 
 //*lodash
 import map from "lodash/map";
@@ -179,24 +180,26 @@ function TableComponent({
     return (
       <TableContainer sx={{ width: "fit-content", borderRadius: "0px" }}>
         <Table size="small">
-          {inExpandCell &&
-            inExpandCell.length > 0 &&
-            inExpandCell.map(({ column, value }) => {
-              const type = column.type;
-              return (
-                <TableRow>
-                  <TableCell sx={{ border: "1px solid black" }}>
-                    {column.Header}
-                  </TableCell>
-                  <TableCell
-                    sx={{ border: "1px solid black" }}
-                    align={type === "number" ? "right" : "inherit"}
-                  >
-                    {value}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+          <TableBody>
+            {inExpandCell &&
+              inExpandCell.length > 0 &&
+              inExpandCell.map(({ column, value, row }) => {
+                const type = column.type;
+                return (
+                  <TableRow key={row.id}>
+                    <TableCell sx={{ border: "1px solid black" }}>
+                      {column.Header}
+                    </TableCell>
+                    <TableCell
+                      sx={{ border: "1px solid black" }}
+                      align={type === "number" ? "right" : "inherit"}
+                    >
+                      {value}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+          </TableBody>
         </Table>
       </TableContainer>
     );
@@ -205,12 +208,7 @@ function TableComponent({
   return (
     <TableContainer component={Paper} sx={{ maxHeight: "85vh" }}>
       {isLoading && <LinearProgress />}
-      <Table
-        stickyHeader
-        size="small"
-        {...getTableProps()}
-        enderRowSubComponent={renderRowSubComponent}
-      >
+      <Table stickyHeader size="small" {...getTableProps()}>
         <TableHead>
           {headerGroups.map((headerGroup) => (
             <TableRow {...headerGroup.getHeaderGroupProps()}>
@@ -255,8 +253,8 @@ function TableComponent({
             prepareRow(row);
 
             return (
-              <Fragment {...row.getRowProps()}>
-                <TableRow>
+              <Fragment key={`fragment_${row.id}`}>
+                <TableRow {...row.getRowProps()} key={row.id}>
                   {row.cells.map((cell, index) => {
                     const inExpand = cell.column.inExpand;
                     const isClick = cell.row.original[cell.column["click"]]
@@ -264,6 +262,24 @@ function TableComponent({
                       : false;
 
                     const inRow = cell.column.inRow;
+                    const type = cell.column.type;
+                    const value = cell.value;
+                    let renderCell = cell.render("Cell");
+
+                    switch (type) {
+                      case "date":
+                        renderCell = (
+                          <Box>
+                            {value &&
+                              moment(new Date(value)).format("DD/MM/yyyy")}
+                          </Box>
+                        );
+                        break;
+
+                      default:
+                        break;
+                    }
+
                     if (inExpand && !inRow) return null;
                     else
                       return (
@@ -296,20 +312,20 @@ function TableComponent({
                               )}
                             </IconButton>
                           ) : (
-                            cell.render("Cell")
+                            renderCell
                           )}
                         </TableCell>
                       );
                   })}
                 </TableRow>
-                {row.isExpanded ? (
-                  <TableRow>
+                {row.isExpanded && (
+                  <TableRow key={`expand_${row.id}`}>
                     <TableCell colSpan={1}></TableCell>
                     <TableCell colSpan={visibleColumns.length - 1}>
                       {renderRowSubComponent({ row })}
                     </TableCell>
                   </TableRow>
-                ) : null}
+                )}
               </Fragment>
             );
           })}
