@@ -72,26 +72,69 @@ function Ticket() {
   const columns = useMemo(
     () => [
       {
-        Header: "ID",
+        Header: "",
         accessor: "id",
         disableFilters: true,
       },
       {
         Header: "Ticket No",
         accessor: "ticket_no",
-        disableFilters: true,
         click: "handleOpenTicketDrawer",
+      },
+      {
+        Header: "Transporter",
+        accessor: "transporter",
+        click: "handleOpenTransporterDrawer",
+        Cell: ({ value }) => {
+          return (
+            <span>
+              {value.name} - {value.vehicle_no}
+            </span>
+          );
+        },
       },
       {
         Header: "First Weight",
         accessor: "first_weight",
         disableFilters: true,
         type: "number",
+        inExpand: true,
       },
       {
-        Header: "Transporter",
-        accessor: "transporter.name",
-        click: "handleOpenTransporterDrawer",
+        Header: "Second Weight",
+        accessor: "second_weight",
+        disableFilters: true,
+        type: "number",
+        inExpand: true,
+      },
+      {
+        Header: "Deduction",
+        accessor: "deduction",
+        disableFilters: true,
+        type: "number",
+        inExpand: true,
+      },
+      {
+        Header: "Nett Weight",
+        accessor: "nett_weight",
+        disableFilters: true,
+        type: "number",
+        inExpand: true,
+      },
+      {
+        Header: "Price Per MT",
+        accessor: "price_per_mt",
+        disableFilters: true,
+        type: "number",
+        inExpand: true,
+      },
+      {
+        Header: "Total Price",
+        accessor: "total_price",
+        disableFilters: true,
+        type: "number",
+        inExpand: true,
+        inRow: true,
       },
     ],
     []

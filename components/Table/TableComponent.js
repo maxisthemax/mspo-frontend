@@ -1,8 +1,9 @@
-import { useMemo, useEffect, useCallback } from "react";
-import { useTable, useFilters, useSortBy } from "react-table";
+import { useMemo, useEffect, useCallback, Fragment } from "react";
+import { useTable, useFilters, useSortBy, useExpanded } from "react-table";
 
 //*lodash
 import map from "lodash/map";
+import filter from "lodash/filter";
 
 //*components
 import { CustomIcon } from "components/Icons";
@@ -137,6 +138,7 @@ function TableComponent({
     rows,
     prepareRow,
     state: { sortBy },
+    visibleColumns,
   } = useTable(
     {
       columns,
@@ -145,7 +147,8 @@ function TableComponent({
       manualSortBy: true,
     },
     useFilters,
-    useSortBy
+    useSortBy,
+    useExpanded
   );
 
   useEffect(() => {
@@ -169,41 +172,80 @@ function TableComponent({
     setPage(0);
   }, []);
 
+  const renderRowSubComponent = useCallback(({ row }) => {
+    const inExpandCell = filter(row.cells, (cell) => {
+      return cell.column.inExpand === true;
+    });
+    return (
+      <TableContainer sx={{ width: "fit-content", borderRadius: "0px" }}>
+        <Table size="small">
+          {inExpandCell &&
+            inExpandCell.length > 0 &&
+            inExpandCell.map(({ column, value }) => {
+              const type = column.type;
+              return (
+                <TableRow>
+                  <TableCell sx={{ border: "1px solid black" }}>
+                    {column.Header}
+                  </TableCell>
+                  <TableCell
+                    sx={{ border: "1px solid black" }}
+                    align={type === "number" ? "right" : "inherit"}
+                  >
+                    {value}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+        </Table>
+      </TableContainer>
+    );
+  }, []);
+
   return (
     <TableContainer component={Paper} sx={{ maxHeight: "85vh" }}>
       {isLoading && <LinearProgress />}
-      <Table stickyHeader size="medium" {...getTableProps()}>
+      <Table
+        stickyHeader
+        size="small"
+        {...getTableProps()}
+        enderRowSubComponent={renderRowSubComponent}
+      >
         <TableHead>
           {headerGroups.map((headerGroup) => (
             <TableRow {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => {
-                return (
-                  <TableCell
-                    key={column.id}
-                    {...column.getHeaderProps}
-                    align={column.type === "number" ? "right" : "left"}
-                    sortDirection={column.isSortedDesc ? "desc" : "asc"}
-                  >
-                    <TableSortLabel
-                      sx={{ width: "100%" }}
-                      {...column.getSortByToggleProps()}
-                      active={column.isSorted}
-                      direction={column.isSortedDesc ? "desc" : "asc"}
+                const inExpand = column.inExpand;
+                const inRow = column.inRow;
+                if (inExpand && !inRow) return null;
+                else
+                  return (
+                    <TableCell
+                      key={column.id}
+                      {...column.getHeaderProps}
+                      align={column.type === "number" ? "right" : "left"}
+                      sortDirection={column.isSortedDesc ? "desc" : "asc"}
                     >
-                      {column.render("Header")}
-                      {column.isSorted ? (
-                        <Box component="span" sx={visuallyHidden}>
-                          {column.isSortedDesc
-                            ? "sorted descending"
-                            : "sorted ascending"}
-                        </Box>
-                      ) : null}
-                    </TableSortLabel>
-                    <div>
-                      {column.canFilter ? column.render("Filter") : null}
-                    </div>
-                  </TableCell>
-                );
+                      <TableSortLabel
+                        sx={{ width: "100%" }}
+                        {...column.getSortByToggleProps()}
+                        active={column.isSorted}
+                        direction={column.isSortedDesc ? "desc" : "asc"}
+                      >
+                        {column.render("Header")}
+                        {column.isSorted ? (
+                          <Box component="span" sx={visuallyHidden}>
+                            {column.isSortedDesc
+                              ? "sorted descending"
+                              : "sorted ascending"}
+                          </Box>
+                        ) : null}
+                      </TableSortLabel>
+                      <div>
+                        {column.canFilter ? column.render("Filter") : null}
+                      </div>
+                    </TableCell>
+                  );
               })}
             </TableRow>
           ))}
@@ -211,35 +253,63 @@ function TableComponent({
         <TableBody {...getTableBodyProps()}>
           {rows.map((row) => {
             prepareRow(row);
-            return (
-              <TableRow {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  const isClick = cell.row.original[cell.column["click"]]
-                    ? true
-                    : false;
 
-                  return (
-                    <TableCell
-                      key={`${cell.column.id}_${cell.row.id}`}
-                      {...cell.getCellProps()}
-                      align={cell.column.type === "number" ? "right" : "left"}
-                      onClick={cell.row.original[cell.column["click"]]}
-                      sx={[
-                        { borderRadius: "0px" },
-                        isClick && {
-                          cursor: "pointer",
-                          "&:hover": {
-                            color: "white",
-                            backgroundColor: secondaryColor,
-                          },
-                        },
-                      ]}
-                    >
-                      {cell.render("Cell")}
+            return (
+              <Fragment {...row.getRowProps()}>
+                <TableRow>
+                  {row.cells.map((cell, index) => {
+                    const inExpand = cell.column.inExpand;
+                    const isClick = cell.row.original[cell.column["click"]]
+                      ? true
+                      : false;
+
+                    const inRow = cell.column.inRow;
+                    if (inExpand && !inRow) return null;
+                    else
+                      return (
+                        <TableCell
+                          key={`${cell.column.id}_${cell.row.id}`}
+                          {...cell.getCellProps()}
+                          align={
+                            cell.column.type === "number" ? "right" : "left"
+                          }
+                          onClick={cell.row.original[cell.column["click"]]}
+                          sx={[
+                            { borderRadius: "0px" },
+                            isClick && {
+                              cursor: "pointer",
+                              "&:hover": {
+                                color: "white",
+                                backgroundColor: secondaryColor,
+                              },
+                            },
+                          ]}
+                          {...(index === 0 && row.getToggleRowExpandedProps())}
+                        >
+                          {index === 0 ? (
+                            <IconButton size="small">
+                              {row.isExpanded ? (
+                                <CustomIcon icon="expand_less" size="small" />
+                              ) : (
+                                <CustomIcon icon="expand_more" size="small" />
+                              )}
+                            </IconButton>
+                          ) : (
+                            cell.render("Cell")
+                          )}
+                        </TableCell>
+                      );
+                  })}
+                </TableRow>
+                {row.isExpanded ? (
+                  <TableRow>
+                    <TableCell colSpan={1}></TableCell>
+                    <TableCell colSpan={visibleColumns.length - 1}>
+                      {renderRowSubComponent({ row })}
                     </TableCell>
-                  );
-                })}
-              </TableRow>
+                  </TableRow>
+                ) : null}
+              </Fragment>
             );
           })}
         </TableBody>
