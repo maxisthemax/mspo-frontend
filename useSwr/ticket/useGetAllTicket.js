@@ -48,6 +48,7 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
     total_price,
     transporter,
     ticket_date,
+    attachments,
   }) => {
     setIsLoading(true);
     try {
@@ -63,6 +64,7 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
           nett_weight,
           ticket_date,
           company: companyId,
+          attachments,
         },
       });
       enqueueSnackbar(`Ticket ${ticket_no} Added Success`, {

@@ -43,6 +43,7 @@ export default function useGetSingleTicket(id) {
     total_price,
     transporter,
     ticket_date,
+    attachments,
   }) => {
     setIsLoading(true);
     try {
@@ -57,6 +58,7 @@ export default function useGetSingleTicket(id) {
           price_per_mt,
           total_price,
           ticket_date,
+          attachments,
         },
       });
       enqueueSnackbar(`Ticket ${ticket_no} Saved Success`, {
