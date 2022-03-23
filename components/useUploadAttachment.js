@@ -2,12 +2,12 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { useSnackbar } from "notistack";
 
-//lodash
+//*lodash
 
-//components
+//*components
 import { CustomIcon } from "./Icons";
 
-//material-ui
+//*material-ui
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
@@ -17,29 +17,25 @@ import IconButton from "@mui/material/IconButton";
 import axios from "utils/http-anxios";
 import { LinearProgress } from "@mui/material";
 
-//material-icons
+//*lib
+import { getStrapiMedialURL } from "lib/media";
 
-//helpers
-
-//utils
-
-//redux
-
-//assets
-
-//styles
-
-function useUploadAttachment(maxLength = 3, unlimited = true) {
+function useUploadAttachment(
+  maxLength = 3,
+  unlimited = true,
+  defaultAttachments = [],
+  deleteCallbackMutate
+) {
   const [files, setFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState();
   const { enqueueSnackbar } = useSnackbar();
 
-  //states
+  //*states
 
-  //useeffect
+  //*useeffect
 
-  //functions
+  //*functions
   const getFile = useCallback(() => files, [files]);
 
   const deleteFile = useCallback(
@@ -50,6 +46,11 @@ function useUploadAttachment(maxLength = 3, unlimited = true) {
     },
     [files]
   );
+
+  const deleteFileFromServer = useCallback(async (id) => {
+    await axios.delete(`/upload/files/${id}`);
+    deleteCallbackMutate();
+  }, []);
 
   const onDrop = useCallback(
     (acceptedFiles) => {
@@ -124,6 +125,33 @@ function useUploadAttachment(maxLength = 3, unlimited = true) {
             <LinearProgress />
           </Box>
         )}
+        {defaultAttachments?.map(({ id, attributes }) => {
+          return (
+            <Grid item xs={4}>
+              <Box p={1}>
+                <img
+                  src={`${getStrapiMedialURL()}${attributes.url}`}
+                  alt={attributes.name}
+                  width="100%"
+                />
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  textAlign="center"
+                  justifyContent="space-between"
+                >
+                  <Typography variant="caption">{attributes.name}</Typography>
+                  <IconButton
+                    disabled={isUploading}
+                    onClick={() => deleteFileFromServer(id)}
+                  >
+                    <CustomIcon icon="delete" />
+                  </IconButton>
+                </Box>
+              </Box>
+            </Grid>
+          );
+        })}
         {[...files] &&
           [...files].map((file, index) => {
             return (

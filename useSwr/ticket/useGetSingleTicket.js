@@ -28,7 +28,7 @@ export default function useGetSingleTicket(id) {
           },
         },
       },
-      populate: ["transporter"],
+      populate: ["transporter", "attachments"],
     }
   );
 

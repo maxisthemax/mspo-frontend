@@ -14,6 +14,7 @@ import { TextFieldForm, TextField, DateFieldForm } from "components/Form";
 import { Button } from "components/Buttons";
 import { useDialog } from "components/Dialogs";
 import { GlobalDrawer } from "components/Drawers";
+import useUploadAttachment from "components/useUploadAttachment";
 
 //*material-ui
 import Stack from "@mui/material/Stack";
@@ -52,12 +53,20 @@ function TicketDrawer() {
 
   //*userSwr
   const { addSingleTicket, deleteSingleTicket } = useGetAllTicket();
-  const { singleTicketData, editSingleTicket, singleTicketDataIsLoading } =
-    useGetSingleTicket(ticketId);
+  const {
+    singleTicketData,
+    editSingleTicket,
+    singleTicketDataIsLoading,
+    mutateSingleTicketData,
+  } = useGetSingleTicket(ticketId);
   const { allTransporterData } = useGetAllTransporter(100);
   const allTicketDataAttribute = singleTicketData?.data?.attributes;
 
   //*const
+  const attachments = allTicketDataAttribute?.attachments?.data;
+  const { startUpload, getTotalUploadedFiles, uploadAttachment } =
+    useUploadAttachment(10, false, attachments, mutateSingleTicketData);
+
   const initialValues =
     mode === "add"
       ? {}
@@ -80,6 +89,13 @@ function TicketDrawer() {
   //*function
   const onSubmit = async (data, { restart }) => {
     data.transporter = transporterFound.id;
+    if (getTotalUploadedFiles() > 0) {
+      const resData = await startUpload();
+      if (resData.data) {
+        data.attachments = resData.data;
+      }
+    }
+
     mode === "add" ? await addSingleTicket(data) : await editSingleTicket(data);
 
     restart();
@@ -261,6 +277,7 @@ function TicketDrawer() {
                       type="number"
                     />
                   </Stack>
+                  {uploadAttachment}
                   <Button
                     type="submit"
                     size="large"
