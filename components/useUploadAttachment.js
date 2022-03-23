@@ -38,9 +38,6 @@ function useUploadAttachment(maxLength = 3, unlimited = true) {
   //states
 
   //useeffect
-  useEffect(() => {
-    uploadError && setTimeout(() => setUploadError(""), 5000);
-  }, [uploadError]);
 
   //functions
   const getFile = useCallback(() => files, [files]);
@@ -56,6 +53,7 @@ function useUploadAttachment(maxLength = 3, unlimited = true) {
 
   const onDrop = useCallback(
     (acceptedFiles) => {
+      setUploadError("");
       acceptedFiles.map((acceptedFile) => {
         return setFiles((files) => {
           const sameFile = files.filter(
@@ -105,18 +103,18 @@ function useUploadAttachment(maxLength = 3, unlimited = true) {
     }
   };
 
-  const { getRootProps, getInputProps, isDragActive, rejectedFiles } =
+  const { getRootProps, getInputProps, isDragActive, fileRejections } =
     useDropzone({
       onDrop,
-      accept: "image/jpeg, image/png, image/jpg",
+      accept: "image/jpeg, image/png, image/jpg, application/pdf",
       maxSize: 5000000,
       multiple: true,
     });
 
   useEffect(() => {
-    if (rejectedFiles?.length > 0)
-      setUploadError("*File Must Be JPEG/JPG/PNG & Not More Than 5MB");
-  }, [rejectedFiles]);
+    if (fileRejections?.length > 0)
+      setUploadError("*File Must Be JPEG/JPG/PNG/PDF & Not More Than 5MB");
+  }, [fileRejections]);
 
   const uploadBox = (
     <React.Fragment>
