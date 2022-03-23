@@ -57,7 +57,7 @@ function TextField({
               },
               ...props.inputProps,
             }}
-            helperText={touched && (error ? error : helperText)}
+            helperText={error && touched ? error : helperText}
             {...normalProps}
             {...props}
           />

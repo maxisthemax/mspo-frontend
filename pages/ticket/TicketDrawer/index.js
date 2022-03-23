@@ -186,7 +186,9 @@ function TicketDrawer() {
                 id="ticketForm"
                 onSubmit={async (event) => {
                   event.preventDefault();
-                  blur("vehicle_no");
+                  if (errors?.vehicle_no) {
+                    blur("vehicle_no");
+                  }
                   await handleSubmit(event);
                 }}
                 noValidate
