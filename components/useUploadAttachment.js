@@ -152,7 +152,7 @@ function useUploadAttachment(
   //*useeffect
   useEffect(() => {
     if (fileRejections?.length > 0)
-      setUploadError("*File Must Be JPEG/JPG/PNG/PDF & Not More Than 5MB");
+      setUploadError("*File Must Be JPEG/JPG/PNG & Not More Than 5MB");
   }, [fileRejections]);
 
   useEffect(() => {
