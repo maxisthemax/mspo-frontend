@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "utils/http-anxios";
+import axiosStrapi from "utils/http-anxios";
 import { useSnackbar } from "notistack";
 
 //*lodash
@@ -50,7 +50,7 @@ export default function useGetAllTransporter(pageSizeDefault = 25) {
   const addSingleTransporter = async ({ name, vehicle_no, address }) => {
     setIsLoading(true);
     try {
-      await axios.post("transporters", {
+      await axiosStrapi.post("transporters", {
         data: {
           name: name,
           company: companyId,
@@ -76,7 +76,7 @@ export default function useGetAllTransporter(pageSizeDefault = 25) {
     setIsLoading(true);
     try {
       const deletedData = find(data.data, { id: id });
-      await axios.delete(`transporters/${id}`);
+      await axiosStrapi.delete(`transporters/${id}`);
       enqueueSnackbar(`Transporter ${deletedData.attributes.name} Deleted`, {
         variant: "success",
       });

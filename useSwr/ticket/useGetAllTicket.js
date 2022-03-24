@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "utils/http-anxios";
+import axiosStrapi from "utils/http-anxios";
 import { useSnackbar } from "notistack";
 
 //*useSwr
@@ -52,7 +52,7 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
   }) => {
     setIsLoading(true);
     try {
-      await axios.post("tickets", {
+      await axiosStrapi.post("tickets", {
         data: {
           ticket_no,
           first_weight,
@@ -85,7 +85,7 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
     setIsLoading(true);
     try {
       const deletedData = find(data.data, { id: id });
-      await axios.delete(`tickets/${id}`);
+      await axiosStrapi.delete(`tickets/${id}`);
       enqueueSnackbar(`Tickets ${deletedData.attributes.ticket_no} Deleted`, {
         variant: "success",
       });

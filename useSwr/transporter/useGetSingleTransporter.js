@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useSwrHttp from "useSwr/useSwrHttp";
-import axios from "utils/http-anxios";
+import axiosStrapi from "utils/http-anxios";
 import { useSnackbar } from "notistack";
 
 //*lodash
@@ -37,7 +37,7 @@ export default function useGetSingleTransporter(id) {
   const editSingleTransporter = async ({ name, vehicle_no, address }) => {
     setIsLoading(true);
     try {
-      await axios.put(`transporters/${id}`, {
+      await axiosStrapi.put(`transporters/${id}`, {
         data: {
           name,
           vehicle_no: replace(toUpper(vehicle_no), /\s+/g, ""),

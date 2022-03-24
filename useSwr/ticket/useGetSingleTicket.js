@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useSwrHttp from "useSwr/useSwrHttp";
-import axios from "utils/http-anxios";
+import axiosStrapi from "utils/http-anxios";
 import { useSnackbar } from "notistack";
 
 //*useSwr
@@ -47,7 +47,7 @@ export default function useGetSingleTicket(id) {
   }) => {
     setIsLoading(true);
     try {
-      await axios.put(`tickets/${id}`, {
+      await axiosStrapi.put(`tickets/${id}`, {
         data: {
           ticket_no,
           transporter,

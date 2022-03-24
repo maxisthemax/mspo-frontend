@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "utils/http-anxios";
+import axiosStrapi from "utils/http-anxios";
 import { useRouter } from "next/router";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { useSnackbar } from "notistack";
@@ -40,7 +40,7 @@ function useUser() {
   async function handleLogin(email, password) {
     try {
       setIsLoading(true);
-      const resData = await axios.post("auth/local", {
+      const resData = await axiosStrapi.post("auth/local", {
         identifier: email,
         password: password,
       });

@@ -7,7 +7,7 @@ import { CacheProvider } from "@emotion/react";
 import theme from "theme";
 import createEmotionCache from "utils/createEmotionCache";
 import { SnackbarProvider } from "notistack";
-import axios from "utils/http-anxios";
+import axiosStrapi from "utils/http-anxios";
 import { SWRConfig } from "swr";
 import { isIsoDate } from "helpers/dateHelpers";
 
@@ -44,7 +44,7 @@ export default function MyApp(props) {
         <SWRConfig
           value={{
             fetcher: async (resource) => {
-              const fetch = await axios.get(resource);
+              const fetch = await axiosStrapi.get(resource);
               const data = JSON.parse(
                 fetch.request.response,
                 function (key, value) {

@@ -1,5 +1,5 @@
 import { Form } from "react-final-form";
-import axios from "utils/http-anxios";
+import axiosStrapi from "utils/http-anxios";
 import qs from "qs";
 import { useState } from "react";
 import "date-fns";
@@ -132,7 +132,7 @@ function TicketDrawer() {
         },
       });
 
-      const { data: transporterData } = await axios.get(
+      const { data: transporterData } = await axiosStrapi.get(
         `${strapiUrl}?${queryString}`
       );
 

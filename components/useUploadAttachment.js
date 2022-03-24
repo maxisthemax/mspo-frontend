@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { useSnackbar } from "notistack";
+import axiosStrapi from "utils/http-anxios";
 
 //*lodash
 
@@ -14,7 +15,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import axios from "utils/http-anxios";
+
 import { LinearProgress } from "@mui/material";
 
 //*lib
@@ -51,7 +52,7 @@ function useUploadAttachment(
   );
 
   const deleteFileFromServer = useCallback(async (id) => {
-    await axios.delete(`/upload/files/${id}`);
+    await axiosStrapi.delete(`/upload/files/${id}`);
     deleteCallbackMutate();
   }, []);
 
@@ -92,7 +93,7 @@ function useUploadAttachment(
     try {
       const formData = new FormData();
       files.forEach((file) => formData.append(`files`, file, file.name));
-      const resData = await axios.post("upload", formData);
+      const resData = await axiosStrapi.post("upload", formData);
       setIsUploading(false);
       setFiles([]);
       enqueueSnackbar("Upload Success", {
