@@ -65,7 +65,13 @@ function TicketDrawer() {
   //*const
   const attachments = allTicketDataAttribute?.attachments?.data;
   const { startUpload, getTotalUploadedFiles, uploadAttachment } =
-    useUploadAttachment(10, false, attachments, mutateSingleTicketData);
+    useUploadAttachment(
+      10,
+      false,
+      attachments,
+      mutateSingleTicketData,
+      ticketId
+    );
 
   const initialValues =
     mode === "add"

@@ -28,7 +28,8 @@ function useUploadAttachment(
   maxLength = 3,
   unlimited = true,
   defaultAttachments = [],
-  deleteCallbackMutate
+  deleteCallbackMutate,
+  reset
 ) {
   const [files, setFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -37,12 +38,6 @@ function useUploadAttachment(
   const { enqueueSnackbar } = useSnackbar();
 
   //*states
-
-  //*useeffect
-  useEffect(() => {
-    if (fileRejections?.length > 0)
-      setUploadError("*File Must Be JPEG/JPG/PNG/PDF & Not More Than 5MB");
-  }, [fileRejections]);
 
   //*functions
   const getFile = useCallback(() => files, [files]);
@@ -116,7 +111,7 @@ function useUploadAttachment(
   const { getRootProps, getInputProps, isDragActive, fileRejections } =
     useDropzone({
       onDrop,
-      accept: "image/jpeg, image/png, image/jpg, application/pdf",
+      accept: "image/jpeg, image/png, image/jpg",
       maxSize: 5000000,
       multiple: true,
     });
@@ -153,6 +148,19 @@ function useUploadAttachment(
       });
     }
   };
+
+  //*useeffect
+  useEffect(() => {
+    if (fileRejections?.length > 0)
+      setUploadError("*File Must Be JPEG/JPG/PNG/PDF & Not More Than 5MB");
+  }, [fileRejections]);
+
+  useEffect(() => {
+    setFiles([]);
+    setImageUrl("");
+    setUploadError("");
+    setIsUploading(false);
+  }, [reset]);
 
   const uploadBox = (
     <React.Fragment>
