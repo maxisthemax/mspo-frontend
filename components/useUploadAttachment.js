@@ -34,6 +34,9 @@ function useUploadAttachment(
   //*states
 
   //*useeffect
+  useEffect(() => {
+    setFiles([]);
+  }, [defaultAttachments]);
 
   //*functions
   const getFile = useCallback(() => files, [files]);
