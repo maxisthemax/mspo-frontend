@@ -92,7 +92,7 @@ function TicketDrawer() {
     if (getTotalUploadedFiles() > 0) {
       const resData = await startUpload();
       if (resData.data) {
-        data.attachments = resData.data;
+        data.attachments = [...attachments, ...resData.data];
       }
     }
 
