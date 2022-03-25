@@ -12,7 +12,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 //*zustand
-import { transporterDrawerStore } from "pages/transporter";
+import { transporterDrawerStore } from "views/transporter";
 
 //*validation
 import { transporterValidate } from "validation";
