@@ -102,4 +102,3 @@ function Transporter() {
   );
 }
 export default Transporter;
-export { default as transporterDrawerStore } from "./TransporterDrawer/store";
