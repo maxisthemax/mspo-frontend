@@ -16,7 +16,7 @@ import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 
 //*zustand
 import ticketDrawerStore from "./TicketDrawer/store";
-import transporterDrawerStore from "pages/transporter/TransporterDrawer/store";
+import { transporterDrawerStore } from "pages/transporter";
 
 function Ticket() {
   //*zustand
@@ -174,3 +174,4 @@ function Ticket() {
   );
 }
 export default Ticket;
+export { default as ticketDrawerStore } from "./TicketDrawer/store";
