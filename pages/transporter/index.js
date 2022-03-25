@@ -15,7 +15,7 @@ import Typography from "@mui/material/Typography";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
 //*zustand
-import transporterDrawerStore from "./TransporterDrawer/store";
+import { transporterDrawerStore } from "pages/transporter";
 
 function Transporter() {
   const {
