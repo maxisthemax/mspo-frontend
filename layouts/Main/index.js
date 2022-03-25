@@ -25,8 +25,8 @@ import { pages } from "utils/constant";
 
 //*useSwr
 import useUser from "useSwr/user/useUser";
-import TransporterDrawer from "views/transporter/TransporterDrawer";
-import TicketDrawer from "views/ticket/TicketDrawer";
+import TransporterDrawer from "views/Transporter/TransporterDrawer";
+import TicketDrawer from "views/Ticket/TicketDrawer";
 
 function Main({ children }) {
   //*define

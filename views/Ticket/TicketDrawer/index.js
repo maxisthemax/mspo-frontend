@@ -22,8 +22,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
 //*zustand
-import { ticketDrawerStore } from "views/ticket";
-import { transporterDrawerStore } from "views/transporter";
+import { ticketDrawerStore } from "views/Ticket";
+import { transporterDrawerStore } from "views/Transporter";
 
 //*validation
 import { ticketValidate } from "validation";

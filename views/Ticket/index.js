@@ -15,8 +15,8 @@ import Typography from "@mui/material/Typography";
 import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 
 //*zustand
-import { ticketDrawerStore } from "views/ticket";
-import { transporterDrawerStore } from "views/transporter";
+import { ticketDrawerStore } from "views/Ticket";
+import { transporterDrawerStore } from "views/Transporter";
 
 function Ticket() {
   //*zustand
