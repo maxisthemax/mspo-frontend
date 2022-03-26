@@ -63,7 +63,7 @@ function TicketDrawer() {
   const allTicketDataAttribute = singleTicketData?.data?.attributes;
 
   //*const
-  const attachments = allTicketDataAttribute?.attachments?.data;
+  const attachments = allTicketDataAttribute?.attachments?.data || [];
   const { startUpload, getTotalUploadedFiles, uploadAttachment } =
     useUploadAttachment(
       10,

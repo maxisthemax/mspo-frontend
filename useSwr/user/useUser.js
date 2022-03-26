@@ -49,8 +49,7 @@ function useUser() {
       });
 
       reactLocalStorage.set("jwt", resData.data.jwt);
-      mutate();
-      router.push("/");
+      window.location.href = "/";
       setIsLoading(false);
     } catch (error) {
       if (error) {
