@@ -36,10 +36,13 @@ import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
 //*lib
 import { getStrapiURL } from "lib/api";
-
+let delayTimer = null;
+let isValid = false;
+let resolveRef = null;
 function TicketDrawer() {
   //*useState
   const [transporterFound, setTransporterFound] = useState(null);
+  const [isCheckingVehicle, setIsCheckingVehicle] = useState(false);
 
   //*zustand
   const ticketDrawerOpen = ticketDrawerStore((state) => state.open);
@@ -116,6 +119,15 @@ function TicketDrawer() {
   };
 
   const vehicleNoCheck = async (value) => {
+    setIsCheckingVehicle(true);
+
+    clearTimeout(delayTimer);
+
+    if (resolveRef) {
+      resolveRef(isValid);
+      resolveRef = null;
+    }
+
     const vehicleNo = toUpper(value);
     if (!vehicleNo) {
       return "Vehicle No Is Required";
@@ -130,32 +142,44 @@ function TicketDrawer() {
       }
     );
 
-    if (data) setTransporterFound(data);
-    else {
-      const strapiUrl = getStrapiURL("transporters");
-      const queryString = qs.stringify({
-        filters: {
-          company: {
-            id: {
-              $eq: companyId || "",
+    if (data) {
+      setIsCheckingVehicle(false);
+      setTransporterFound(data);
+    } else {
+      return await new Promise((resolve) => {
+        resolveRef = resolve;
+        delayTimer = setTimeout(async () => {
+          const strapiUrl = getStrapiURL("transporters");
+          const queryString = qs.stringify({
+            filters: {
+              company: {
+                id: {
+                  $eq: companyId || "",
+                },
+              },
+              vehicle_no: {
+                $eq: vehicleNo,
+              },
             },
-          },
-          vehicle_no: {
-            $eq: vehicleNo,
-          },
-        },
+          });
+
+          const { data: transporterData } = await axiosStrapi.get(
+            `${strapiUrl}?${queryString}`
+          );
+
+          if (transporterData.data.length > 0) {
+            setTransporterFound(transporterData.data[0]);
+            isValid = data.status === "OK";
+            resolve(isValid);
+            resolveRef = null;
+            setIsCheckingVehicle(false);
+          } else {
+            setTransporterFound(null);
+            resolve("Vehicle No. Not Found");
+            setIsCheckingVehicle(false);
+          }
+        }, 1000);
       });
-
-      const { data: transporterData } = await axiosStrapi.get(
-        `${strapiUrl}?${queryString}`
-      );
-
-      if (transporterData.data.length > 0) {
-        setTransporterFound(transporterData.data[0]);
-      } else {
-        setTransporterFound(null);
-        return "Vehicle No. Not Found";
-      }
     }
   };
 
@@ -171,29 +195,40 @@ function TicketDrawer() {
           initialValues={initialValues}
           validate={ticketValidate}
           onSubmit={onSubmit}
-          validateOnBlur={true}
           render={({
             handleSubmit,
             submitting,
-            form: { blur },
+            form: { blur, change },
             values,
             errors,
           }) => {
-            const {
-              first_weight,
-              second_weight,
-              deduction,
-              price_per_mt,
-              nett_weight,
-            } = values;
-            const nettWeight =
-              (first_weight || 0) - (second_weight || 0) - (deduction || 0);
+            const { first_weight, second_weight, deduction, price_per_mt } =
+              values;
+            const onChangeExternal = (e) => {
+              const name = e.target.name;
+              const value = e.target.value;
 
-            values["nett_weight"] = round(nettWeight, 2);
-            values["total_price"] = round(
-              (nett_weight || 0) * (price_per_mt || 0),
-              2
-            );
+              const changeValue = {
+                first_weight,
+                second_weight,
+                deduction,
+                price_per_mt,
+              };
+              changeValue[name] = value;
+              change(name, value);
+              const nettWeight =
+                (changeValue.first_weight || 0) -
+                (changeValue.second_weight || 0) -
+                (changeValue.deduction || 0);
+              change("nett_weight", round(nettWeight, 2));
+              change(
+                "total_price",
+                round(
+                  round((nettWeight || 0) * (changeValue.price_per_mt || 0), 2),
+                  2
+                )
+              );
+            };
 
             return (
               <form
@@ -264,12 +299,14 @@ function TicketDrawer() {
                       label="First Weight"
                       name="first_weight"
                       type="number"
+                      onChange={onChangeExternal}
                     />
                     <TextFieldForm
                       disabled={singleTicketDataIsLoading}
                       label="Second Weight"
                       name="second_weight"
                       type="number"
+                      onChange={onChangeExternal}
                     />
                   </Stack>
                   <Stack spacing={2} direction="row">
@@ -278,6 +315,7 @@ function TicketDrawer() {
                       label="Deduction"
                       name="deduction"
                       type="number"
+                      onChange={onChangeExternal}
                     />
                     <TextFieldForm
                       disabled={true}
@@ -292,6 +330,7 @@ function TicketDrawer() {
                       label="Price per mt"
                       name="price_per_mt"
                       type="number"
+                      onChange={onChangeExternal}
                     />
                     <TextFieldForm
                       disabled={true}
@@ -304,7 +343,11 @@ function TicketDrawer() {
                   <Button
                     type="submit"
                     size="large"
-                    disabled={submitting || singleTicketDataIsLoading}
+                    disabled={
+                      submitting ||
+                      singleTicketDataIsLoading ||
+                      isCheckingVehicle
+                    }
                   >
                     {mode === "add" ? "Create" : "Edit"}
                   </Button>

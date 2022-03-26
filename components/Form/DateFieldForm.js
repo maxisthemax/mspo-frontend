@@ -22,6 +22,8 @@ function DateFieldForm({ name, label, required }) {
         name={name}
         required={required}
         dateFunsUtils={DateFnsUtils}
+        toolbarFormat="yyyy-MM-dd"
+        inputFormat="dd/MM/yyyy"
         InputProps={{
           size: "small",
         }}

@@ -8,15 +8,31 @@ const ticketValidate = makeValidate(
       .required("Ticket Date. Is Required")
       .nullable()
       .transform((v) => (v instanceof Date && !isNaN(v) ? v : null)),
-    first_weight: Yup.number().required("First Weight Is Required"),
-    second_weight: Yup.number().required("Second Weight Is Required"),
+    first_weight: Yup.number()
+      .required("First Weight Is Required")
+      .nullable()
+      .transform((v) => {
+        return !isNaN(v) ? v : undefined;
+      }),
+    second_weight: Yup.number()
+      .required("Second Weight Is Required")
+      .nullable()
+      .transform((v) => {
+        return !isNaN(v) ? v : undefined;
+      }),
     nett_weight: Yup.number()
       .required("Nett Weight Is Required")
-      .min(0.01, "Nett Weight Cannot Lower Than 0"),
-    price_per_mt: Yup.number().required("Price Per MT Is Required"),
+      .min(0.01, "Nett Weight Cannot Lower Than 0.01"),
+    price_per_mt: Yup.number()
+      .required("Price Per MT Is Required")
+      .nullable()
+      .nullable()
+      .transform((v) => {
+        return !isNaN(v) ? v : undefined;
+      }),
     total_price: Yup.number()
       .required("Total Price Is Required")
-      .min(0.01, "Nett Weight Cannot Lower Than 0"),
+      .min(0.01, "Total Price Cannot Lower Than 0.01"),
   })
 );
 
