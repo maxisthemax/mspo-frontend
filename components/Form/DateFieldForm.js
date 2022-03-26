@@ -1,38 +1,32 @@
-import { Field } from "react-final-form";
-import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import { DatePicker } from "mui-rff";
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import makeStyles from "@mui/styles/makeStyles";
+import Box from "@mui/material/Box";
 
 //*material-ui
-import DatePicker from "@mui/lab/DatePicker";
-import TextField from "@mui/material/TextField";
-
-function DateFieldForm({ name, helperText, ...props }) {
+const useStyles = makeStyles(() => ({
+  dateLabel: {
+    "& .MuiFormLabel-root.MuiInputLabel-formControl:not(.MuiInputLabel-shrink)":
+      {
+        transform: "translate(14px, 9px) scale(1)",
+      },
+  },
+}));
+function DateFieldForm({ name, label, required }) {
+  const classes = useStyles();
   return (
-    <Field name={name}>
-      {({ meta, input }) => {
-        const { error, touched } = meta;
-        return (
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
-              {...input}
-              okText="Now"
-              toolbarFormat="yyyy-MM-dd"
-              inputFormat="dd/MM/yyyy"
-              label="Ticket Date"
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  helperText={touched && (error ? error : helperText)}
-                  error={error && touched}
-                  size="small"
-                />
-              )}
-              {...props}
-            />
-          </LocalizationProvider>
-        );
-      }}
-    </Field>
+    <Box className={classes.dateLabel}>
+      <DatePicker
+        label={label}
+        name={name}
+        required={required}
+        dateFunsUtils={DateFnsUtils}
+        InputProps={{
+          size: "small",
+        }}
+      />
+    </Box>
   );
 }
 

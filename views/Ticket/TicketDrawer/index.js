@@ -29,6 +29,7 @@ import { transporterDrawerStore } from "views/Transporter";
 import { ticketValidate } from "validation";
 
 //*useSwr
+import useUser from "useSwr/user/useUser";
 import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 import useGetSingleTicket from "useSwr/ticket/useGetSingleTicket";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
@@ -49,6 +50,7 @@ function TicketDrawer() {
   );
 
   //*define
+  const { userData } = useUser();
   const { Dialog, handleOpenDialog } = useDialog();
 
   //*userSwr
@@ -63,6 +65,7 @@ function TicketDrawer() {
   const allTicketDataAttribute = singleTicketData?.data?.attributes;
 
   //*const
+  const companyId = userData?.company?.id;
   const attachments = allTicketDataAttribute?.attachments?.data || [];
   const { startUpload, getTotalUploadedFiles, uploadAttachment } =
     useUploadAttachment(
@@ -132,6 +135,11 @@ function TicketDrawer() {
       const strapiUrl = getStrapiURL("transporters");
       const queryString = qs.stringify({
         filters: {
+          company: {
+            id: {
+              $eq: companyId || "",
+            },
+          },
           vehicle_no: {
             $eq: vehicleNo,
           },
@@ -208,7 +216,11 @@ function TicketDrawer() {
                     required={true}
                   />
                   <Stack spacing={2}>
-                    <DateFieldForm name="ticket_date" />
+                    <DateFieldForm
+                      label="Ticket Date"
+                      name="ticket_date"
+                      required={true}
+                    />
                   </Stack>
                   <Stack direction="row" spacing={1} alignItems="baseline">
                     <TextField
@@ -218,7 +230,10 @@ function TicketDrawer() {
                       size="small"
                       id="vehicle_no"
                       label="Vehicle No"
-                      helperText={`Transporter Name: ${transporterFound?.attributes?.name}`}
+                      helperText={
+                        transporterFound &&
+                        `Transporter Name: ${transporterFound?.attributes?.name}`
+                      }
                       inputProps={{
                         style: { textTransform: "uppercase" },
                       }}
