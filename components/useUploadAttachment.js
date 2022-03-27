@@ -195,7 +195,7 @@ function useUploadAttachment(
           );
         })}
       </Grid>
-      <Box border="dotted">
+      <Box border="solid">
         <Grid container style={{ opacity: isUploading && 0.5 }}>
           {isUploading && (
             <Box style={{ width: "100%" }}>
@@ -240,12 +240,12 @@ function useUploadAttachment(
           borderColor={isDragActive && "#343c56"}
           color={isDragActive && "#343c56"}
         >
-          <Box p={1}>
+          <Box p={1} border="dotted">
             <input {...getInputProps()} />
             <Typography>
               {maxLength > 1 && !unlimited
-                ? `Browse file here (Max ${maxLength} files)`
-                : "Browse file here"}
+                ? `Browse/drop file here (Max ${maxLength} files)`
+                : "Browse/drop file here"}
             </Typography>
             <Typography>{"*Only jpeg, jpg, png *File size < 5MB"}</Typography>
           </Box>
