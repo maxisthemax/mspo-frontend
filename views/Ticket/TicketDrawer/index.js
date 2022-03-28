@@ -42,7 +42,6 @@ let resolveRef = null;
 function TicketDrawer() {
   //*useState
   const [transporterFound, setTransporterFound] = useState(null);
-  const [isCheckingVehicle, setIsCheckingVehicle] = useState(false);
 
   //*zustand
   const ticketDrawerOpen = ticketDrawerStore((state) => state.open);
@@ -119,8 +118,6 @@ function TicketDrawer() {
   };
 
   const vehicleNoCheck = async (value) => {
-    setIsCheckingVehicle(true);
-
     clearTimeout(delayTimer);
 
     if (resolveRef) {
@@ -130,7 +127,7 @@ function TicketDrawer() {
 
     const vehicleNo = toUpper(value);
     if (!vehicleNo) {
-      return "Vehicle No Is Required";
+      return { status: "fail", data: "Vehicle No Is Required" };
     }
 
     if (transporterFound?.attributes?.vehicle_no === vehicleNo) return;
@@ -143,8 +140,7 @@ function TicketDrawer() {
     );
 
     if (data) {
-      setIsCheckingVehicle(false);
-      setTransporterFound(data);
+      return { status: "success", data: data };
     } else {
       return await new Promise((resolve) => {
         resolveRef = resolve;
@@ -168,18 +164,27 @@ function TicketDrawer() {
           );
 
           if (transporterData.data.length > 0) {
-            setTransporterFound(transporterData.data[0]);
-            isValid = data.status === "OK";
-            resolve(isValid);
+            resolve({ status: "success", data: transporterData.data[0] });
             resolveRef = null;
-            setIsCheckingVehicle(false);
           } else {
-            setTransporterFound(null);
-            resolve("Vehicle No. Not Found");
-            setIsCheckingVehicle(false);
+            resolve({ status: "fail", data: "Vehicle No. Not Found" });
           }
         }, 1000);
       });
+    }
+  };
+
+  const handleCheck = async (value) => {
+    const resData = await vehicleNoCheck(value);
+
+    if (resData.status === "success") {
+      setTransporterFound({ ...resData.data });
+      return false;
+    }
+    if (resData.status === "fail") {
+      setTransporterFound(null);
+      console.log(resData.data);
+      return resData.data;
     }
   };
 
@@ -201,6 +206,7 @@ function TicketDrawer() {
             form: { blur, change },
             values,
             errors,
+            validating,
           }) => {
             const { first_weight, second_weight, deduction, price_per_mt } =
               values;
@@ -260,7 +266,7 @@ function TicketDrawer() {
                   <Stack direction="row" spacing={1} alignItems="baseline">
                     <TextField
                       name="vehicle_no"
-                      validate={vehicleNoCheck}
+                      validate={handleCheck}
                       disabledKeycode={["Space"]}
                       size="small"
                       id="vehicle_no"
@@ -344,9 +350,7 @@ function TicketDrawer() {
                     type="submit"
                     size="large"
                     disabled={
-                      submitting ||
-                      singleTicketDataIsLoading ||
-                      isCheckingVehicle
+                      submitting || singleTicketDataIsLoading || validating
                     }
                   >
                     {mode === "add" ? "Create" : "Edit"}
