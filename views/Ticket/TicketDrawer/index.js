@@ -24,7 +24,7 @@ import { ticketDrawerStore } from "views/Ticket";
 import { transporterDrawerStore } from "views/Transporter";
 
 //*validation
-import { ticketValidate, vehicleNoCheck } from "validation";
+import { ticketNoCheck, ticketValidate, vehicleNoCheck } from "validation";
 
 //*useSwr
 import useUser from "useSwr/user/useUser";
@@ -49,7 +49,8 @@ function TicketDrawer() {
   const { Dialog, handleOpenDialog } = useDialog();
 
   //*userSwr
-  const { addSingleTicket, deleteSingleTicket } = useGetAllTicket();
+  const { allTicketData, addSingleTicket, deleteSingleTicket } =
+    useGetAllTicket();
   const {
     singleTicketData,
     editSingleTicket,
@@ -90,6 +91,7 @@ function TicketDrawer() {
 
   //*useRef
   const vehicleValueRef = useRef("");
+  const ticketValueRef = useRef("");
 
   //*function
   const handleSetFoundData = (field, data) => {
@@ -183,12 +185,28 @@ function TicketDrawer() {
                 autoComplete="off"
               >
                 <Stack spacing={2}>
-                  <TextFieldForm
+                  <TextField
+                    name="ticket_no"
+                    validate={(value) =>
+                      ticketNoCheck(
+                        value,
+                        errors["ticket_no"],
+                        ticketValueRef,
+                        [...allTicketData?.data, foundData?.ticket],
+                        handleSetFoundData,
+                        companyId
+                      )
+                    }
+                    size="small"
+                    id="ticket_no"
+                    label="Ticket No"
+                  />
+                  {/* <TextFieldForm
                     disabled={singleTicketDataIsLoading}
                     label="Ticket No"
                     name="ticket_no"
                     required={true}
-                  />
+                  /> */}
                   <Stack spacing={2}>
                     <DateFieldForm
                       label="Ticket Date"
@@ -204,13 +222,7 @@ function TicketDrawer() {
                           value,
                           errors["vehicle_no"],
                           vehicleValueRef,
-                          uniqBy(
-                            [
-                              ...allTransporterData?.data,
-                              foundData?.transporter,
-                            ],
-                            "id"
-                          ),
+                          [...allTransporterData?.data, foundData?.transporter],
                           handleSetFoundData,
                           companyId
                         )

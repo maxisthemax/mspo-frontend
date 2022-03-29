@@ -7,17 +7,22 @@ import find from "lodash/find";
 //*lodash
 import toUpper from "lodash/toUpper";
 import uniqBy from "lodash/uniqBy";
+import toLower from "lodash/toLower";
+import startCase from "lodash/startCase";
 
 //*lib
 import { getStrapiURL } from "lib/api";
 
-let delayTimer = null;
-let isValid = false;
-let resolveRef = null;
+let delayTimerVehicleNo = null;
+let isValidVehicleNo = false;
+let resolveRefVehicleNo = null;
+
+let delayTimerTicketNo = null;
+let isValidTicketNo = false;
+let resolveRefTicketNo = null;
 
 export const ticketValidate = makeValidate(
   Yup.object().shape({
-    ticket_no: Yup.string().required("Ticket No. Is Required"),
     ticket_date: Yup.date()
       .required("Ticket Date. Is Required")
       .nullable()
@@ -60,11 +65,11 @@ export const vehicleNoCheck = async (
 ) => {
   if (vehicleValueRef.current === value) return error ? error : false;
   vehicleValueRef.current = value;
-  clearTimeout(delayTimer);
+  clearTimeout(delayTimerVehicleNo);
 
-  if (resolveRef) {
-    resolveRef(isValid);
-    resolveRef = null;
+  if (resolveRefVehicleNo) {
+    resolveRefVehicleNo(isValidVehicleNo);
+    resolveRefVehicleNo = null;
   }
 
   const vehicleNo = toUpper(value);
@@ -81,8 +86,8 @@ export const vehicleNoCheck = async (
     return false;
   } else {
     return await new Promise((resolve) => {
-      resolveRef = resolve;
-      delayTimer = setTimeout(async () => {
+      resolveRefVehicleNo = resolve;
+      delayTimerVehicleNo = setTimeout(async () => {
         const strapiUrl = getStrapiURL("transporters");
         const queryString = qs.stringify({
           filters: {
@@ -104,9 +109,90 @@ export const vehicleNoCheck = async (
         if (transporterData.data.length > 0) {
           handleSetFoundData("transporter", transporterData.data[0]);
           resolve(false);
-          resolveRef = null;
+          resolveRefVehicleNo = null;
         } else {
           resolve("Vehicle No. Not Found");
+        }
+      }, 1000);
+    });
+  }
+};
+
+export const ticketNoCheck = async (
+  value,
+  error,
+  ticketValueRef,
+  defaultData,
+  handleSetFoundData,
+  companyId
+) => {
+  if (ticketValueRef.current === value) return error ? error : false;
+  ticketValueRef.current = value;
+  clearTimeout(delayTimerTicketNo);
+
+  if (resolveRefTicketNo) {
+    resolveRefTicketNo(isValidTicketNo);
+    resolveRefTicketNo = null;
+  }
+
+  const ticketNo = toLower(value);
+  if (!ticketNo) {
+    return "Ticket No Is Required";
+  }
+
+  const data = find(uniqBy(defaultData, "id"), (data) => {
+    return toLower(data?.attributes?.ticket_no) === ticketNo;
+  });
+
+  if (data) {
+    return "Duplicated Ticket No. Found";
+  } else {
+    return await new Promise((resolve) => {
+      resolveRefTicketNo = resolve;
+      delayTimerTicketNo = setTimeout(async () => {
+        const strapiUrl = getStrapiURL("tickets");
+        const queryString = qs.stringify({
+          filters: {
+            company: {
+              id: {
+                $eq: companyId || "",
+              },
+            },
+            $or: [
+              {
+                ticket_no: {
+                  $eq: ticketNo,
+                },
+              },
+              {
+                ticket_no: {
+                  $eq: startCase(ticketNo),
+                },
+              },
+              {
+                ticket_no: {
+                  $eq: toLower(ticketNo),
+                },
+              },
+              {
+                ticket_no: {
+                  $eq: toUpper(ticketNo),
+                },
+              },
+            ],
+          },
+        });
+
+        const { data: ticketData } = await axiosStrapi.get(
+          `${strapiUrl}?${queryString}`
+        );
+
+        if (ticketData.data.length > 0) {
+          handleSetFoundData("ticket", ticketData.data[0]);
+          resolve("Duplicated Ticket No. Found");
+          resolveRefTicketNo = null;
+        } else {
+          return false;
         }
       }, 1000);
     });
