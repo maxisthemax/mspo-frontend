@@ -8,6 +8,7 @@ import "date-fns";
 import find from "lodash/find";
 import toUpper from "lodash/toUpper";
 import round from "lodash/round";
+import uniqBy from "lodash/uniqBy";
 
 //*components
 import { TextFieldForm, TextField, DateFieldForm } from "components/Form";
@@ -41,7 +42,7 @@ let isValid = false;
 let resolveRef = null;
 function TicketDrawer() {
   //*useState
-  const [transporterFound, setTransporterFound] = useState(null);
+  const [foundData, setFoundData] = useState({});
 
   //*zustand
   const ticketDrawerOpen = ticketDrawerStore((state) => state.open);
@@ -98,13 +99,18 @@ function TicketDrawer() {
   //*useRef
 
   //*function
+  const handleSetFoundData = (field, data) => {
+    setFoundData((foundData) => {
+      foundData[field] = data;
+      return foundData;
+    });
+  };
   const handleCloseTicketDrawer = () => {
-    setTransporterFound();
+    setFoundData({});
     closeTicketDrawer();
   };
-
   const onSubmit = async (data, { restart }) => {
-    data.transporter = transporterFound.id;
+    data.transporter = foundData?.transporter.id;
     if (getTotalUploadedFiles() > 0) {
       const resData = await startUpload();
       if (resData.data) {
@@ -113,7 +119,7 @@ function TicketDrawer() {
     }
 
     mode === "add" ? await addSingleTicket(data) : await editSingleTicket(data);
-
+    setFoundData({});
     restart();
   };
 
@@ -136,15 +142,15 @@ function TicketDrawer() {
     }
 
     const data = find(
-      allTransporterData?.data,
-      ({ attributes: { vehicle_no } }) => {
-        return vehicle_no === vehicleNo;
+      uniqBy([...allTransporterData?.data, foundData?.transporter], "id"),
+      (data) => {
+        return data?.attributes?.vehicle_no === vehicleNo;
       }
     );
 
     if (data) {
-      setTransporterFound(data);
-      return;
+      handleSetFoundData("transporter", data);
+      return false;
     } else {
       return await new Promise((resolve) => {
         resolveRef = resolve;
@@ -168,7 +174,7 @@ function TicketDrawer() {
           );
 
           if (transporterData.data.length > 0) {
-            setTransporterFound(transporterData.data[0]);
+            handleSetFoundData("transporter", transporterData.data[0]);
             resolve(false);
             resolveRef = null;
           } else {
@@ -263,8 +269,8 @@ function TicketDrawer() {
                       id="vehicle_no"
                       label="Vehicle No"
                       helperText={
-                        transporterFound &&
-                        `Transporter Name: ${transporterFound?.attributes?.name}`
+                        foundData?.transporter &&
+                        `Transporter Name: ${foundData?.transporter?.attributes?.name}`
                       }
                       inputProps={{
                         style: { textTransform: "uppercase" },
