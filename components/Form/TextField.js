@@ -35,11 +35,11 @@ function TextField({
   return (
     <Field name={name} validate={validate}>
       {({ meta, input }) => {
-        const { error, touched } = meta;
+        const { error, touched, dirty } = meta;
         return (
           <MuiTextField
             {...input}
-            error={error && touched}
+            error={(dirty || touched) && error ? error : null}
             size="small"
             fullWidth
             label={label}
@@ -57,7 +57,7 @@ function TextField({
               },
               ...props.inputProps,
             }}
-            helperText={error && touched ? error : helperText}
+            helperText={(dirty || touched) && error ? error : helperText}
             {...normalProps}
             {...props}
           />

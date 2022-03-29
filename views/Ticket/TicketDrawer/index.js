@@ -98,6 +98,11 @@ function TicketDrawer() {
   //*useRef
 
   //*function
+  const handleCloseTicketDrawer = () => {
+    setTransporterFound();
+    closeTicketDrawer();
+  };
+
   const onSubmit = async (data, { restart }) => {
     data.transporter = transporterFound.id;
     if (getTotalUploadedFiles() > 0) {
@@ -114,7 +119,7 @@ function TicketDrawer() {
 
   const handleDeleteTicket = async () => {
     await deleteSingleTicket(ticketId);
-    closeTicketDrawer();
+    handleCloseTicketDrawer();
   };
 
   const vehicleNoCheck = async (value) => {
@@ -127,10 +132,8 @@ function TicketDrawer() {
 
     const vehicleNo = toUpper(value);
     if (!vehicleNo) {
-      return { status: "fail", data: "Vehicle No Is Required" };
+      return "Vehicle No Is Required";
     }
-
-    if (transporterFound?.attributes?.vehicle_no === vehicleNo) return;
 
     const data = find(
       allTransporterData?.data,
@@ -140,7 +143,8 @@ function TicketDrawer() {
     );
 
     if (data) {
-      return { status: "success", data: data };
+      setTransporterFound(data);
+      return;
     } else {
       return await new Promise((resolve) => {
         resolveRef = resolve;
@@ -164,32 +168,19 @@ function TicketDrawer() {
           );
 
           if (transporterData.data.length > 0) {
-            resolve({ status: "success", data: transporterData.data[0] });
+            setTransporterFound(transporterData.data[0]);
+            resolve(false);
             resolveRef = null;
           } else {
-            resolve({ status: "fail", data: "Vehicle No. Not Found" });
+            resolve("Vehicle No. Not Found");
           }
         }, 1000);
       });
     }
   };
 
-  const handleCheck = async (value) => {
-    const resData = await vehicleNoCheck(value);
-
-    if (resData.status === "success") {
-      setTransporterFound({ ...resData.data });
-      return false;
-    }
-    if (resData.status === "fail") {
-      setTransporterFound(null);
-      console.log(resData.data);
-      return resData.data;
-    }
-  };
-
   return (
-    <GlobalDrawer open={ticketDrawerOpen} closeDrawer={closeTicketDrawer}>
+    <GlobalDrawer open={ticketDrawerOpen} closeDrawer={handleCloseTicketDrawer}>
       <Box p={4}>
         <Typography variant="h6" gutterBottom>
           {mode === "add" ? "Add" : "Edit"} Ticket
@@ -266,7 +257,7 @@ function TicketDrawer() {
                   <Stack direction="row" spacing={1} alignItems="baseline">
                     <TextField
                       name="vehicle_no"
-                      validate={handleCheck}
+                      validate={vehicleNoCheck}
                       disabledKeycode={["Space"]}
                       size="small"
                       id="vehicle_no"
