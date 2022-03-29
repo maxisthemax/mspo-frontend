@@ -1,11 +1,8 @@
 import { Form } from "react-final-form";
-import axiosStrapi from "utils/http-anxios";
-import qs from "qs";
 import { useState, useRef } from "react";
 import "date-fns";
 
 //*lodash
-import find from "lodash/find";
 import toUpper from "lodash/toUpper";
 import round from "lodash/round";
 import uniqBy from "lodash/uniqBy";
@@ -27,7 +24,7 @@ import { ticketDrawerStore } from "views/Ticket";
 import { transporterDrawerStore } from "views/Transporter";
 
 //*validation
-import { ticketValidate } from "validation";
+import { ticketValidate, vehicleNoCheck } from "validation";
 
 //*useSwr
 import useUser from "useSwr/user/useUser";
@@ -35,11 +32,6 @@ import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 import useGetSingleTicket from "useSwr/ticket/useGetSingleTicket";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 
-//*lib
-import { getStrapiURL } from "lib/api";
-let delayTimer = null;
-let isValid = false;
-let resolveRef = null;
 function TicketDrawer() {
   //*useState
   const [foundData, setFoundData] = useState({});
@@ -129,65 +121,6 @@ function TicketDrawer() {
     handleCloseTicketDrawer();
   };
 
-  const vehicleNoCheck = async (value, error) => {
-    if (vehicleValueRef.current === value) return error ? error : false;
-    vehicleValueRef.current = value;
-    clearTimeout(delayTimer);
-
-    if (resolveRef) {
-      resolveRef(isValid);
-      resolveRef = null;
-    }
-
-    const vehicleNo = toUpper(value);
-    if (!vehicleNo) {
-      return "Vehicle No Is Required";
-    }
-
-    const data = find(
-      uniqBy([...allTransporterData?.data, foundData?.transporter], "id"),
-      (data) => {
-        return data?.attributes?.vehicle_no === vehicleNo;
-      }
-    );
-
-    if (data) {
-      handleSetFoundData("transporter", data);
-      return false;
-    } else {
-      return await new Promise((resolve) => {
-        resolveRef = resolve;
-        delayTimer = setTimeout(async () => {
-          const strapiUrl = getStrapiURL("transporters");
-          const queryString = qs.stringify({
-            filters: {
-              company: {
-                id: {
-                  $eq: companyId || "",
-                },
-              },
-              vehicle_no: {
-                $eq: vehicleNo,
-              },
-            },
-          });
-
-          const { data: transporterData } = await axiosStrapi.get(
-            `${strapiUrl}?${queryString}`
-          );
-
-          if (transporterData.data.length > 0) {
-            handleSetFoundData("transporter", transporterData.data[0]);
-            resolve(false);
-            resolveRef = null;
-          } else {
-            resolve("Vehicle No. Not Found");
-          }
-        }, 1000);
-      });
-    }
-  };
-
   return (
     <GlobalDrawer open={ticketDrawerOpen} closeDrawer={handleCloseTicketDrawer}>
       <Box p={4}>
@@ -267,7 +200,20 @@ function TicketDrawer() {
                     <TextField
                       name="vehicle_no"
                       validate={(value) =>
-                        vehicleNoCheck(value, errors["vehicle_no"])
+                        vehicleNoCheck(
+                          value,
+                          errors["vehicle_no"],
+                          vehicleValueRef,
+                          uniqBy(
+                            [
+                              ...allTransporterData?.data,
+                              foundData?.transporter,
+                            ],
+                            "id"
+                          ),
+                          handleSetFoundData,
+                          companyId
+                        )
                       }
                       disabledKeycode={["Space"]}
                       size="small"
