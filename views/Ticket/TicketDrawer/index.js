@@ -1,7 +1,7 @@
 import { Form } from "react-final-form";
 import axiosStrapi from "utils/http-anxios";
 import qs from "qs";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "date-fns";
 
 //*lodash
@@ -97,6 +97,7 @@ function TicketDrawer() {
         };
 
   //*useRef
+  const vehicleValueRef = useRef("");
 
   //*function
   const handleSetFoundData = (field, data) => {
@@ -128,7 +129,9 @@ function TicketDrawer() {
     handleCloseTicketDrawer();
   };
 
-  const vehicleNoCheck = async (value) => {
+  const vehicleNoCheck = async (value, error) => {
+    if (vehicleValueRef.current === value) return error ? error : false;
+    vehicleValueRef.current = value;
     clearTimeout(delayTimer);
 
     if (resolveRef) {
@@ -263,7 +266,9 @@ function TicketDrawer() {
                   <Stack direction="row" spacing={1} alignItems="baseline">
                     <TextField
                       name="vehicle_no"
-                      validate={vehicleNoCheck}
+                      validate={(value) =>
+                        vehicleNoCheck(value, errors["vehicle_no"])
+                      }
                       disabledKeycode={["Space"]}
                       size="small"
                       id="vehicle_no"
