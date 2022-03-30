@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { useSnackbar } from "notistack";
 import axiosStrapi from "utils/http-anxios";
 import axios from "axios";
+import Image from "next/image";
 
 //*lodash
 
@@ -18,11 +19,13 @@ import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
-
 import { LinearProgress, Stack } from "@mui/material";
 
 //*lib
 import { getStrapiMedialURL } from "lib/media";
+
+import pdfImage from "assets/pdf.png";
+import { getUrlExt } from "helpers/stringHelper";
 
 function useUploadAttachment(
   maxLength = 3,
@@ -111,7 +114,7 @@ function useUploadAttachment(
   const { getRootProps, getInputProps, isDragActive, fileRejections } =
     useDropzone({
       onDrop,
-      accept: "image/jpeg, image/png, image/jpg",
+      accept: "image/jpeg, image/png, image/jpg, application/pdf",
       maxSize: 5000000,
       multiple: true,
     });
@@ -152,7 +155,7 @@ function useUploadAttachment(
   //*useeffect
   useEffect(() => {
     if (fileRejections?.length > 0)
-      setUploadError("*File Must Be JPEG/JPG/PNG & Not More Than 5MB");
+      setUploadError("*File Must Be JPEG/JPG/PNG/PDF & Not More Than 5MB");
   }, [fileRejections]);
 
   useEffect(() => {
@@ -166,14 +169,63 @@ function useUploadAttachment(
     <React.Fragment>
       <Grid container>
         {defaultAttachments?.map(({ id, attributes }) => {
+          let content = <div></div>;
+
+          switch (attributes.ext) {
+            case ".pdf":
+              content = (
+                <Box
+                  p={2}
+                  onClick={() => {
+                    window.open(
+                      `${getStrapiMedialURL()}${attributes.url}`,
+                      "_blank"
+                    );
+                  }}
+                >
+                  <Image src={pdfImage} alt="PDF.png" />
+                </Box>
+              );
+              break;
+
+            default:
+              content = (
+                <Box
+                  onClick={() => {
+                    window.open(
+                      `${getStrapiMedialURL()}${attributes.url}`,
+                      "_blank"
+                    );
+                  }}
+                >
+                  <img
+                    src={`${getStrapiMedialURL()}${attributes.url}`}
+                    alt={attributes.name}
+                    width="100%"
+                  />
+                </Box>
+              );
+              break;
+          }
+
           return (
             <Grid item xs={4}>
-              <Box p={1}>
-                <img
-                  src={`${getStrapiMedialURL()}${attributes.url}`}
-                  alt={attributes.name}
-                  width="100%"
-                />
+              <Box
+                p={1}
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <Box
+                  height="100%"
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  {content}
+                </Box>
                 <Box
                   display="flex"
                   alignItems="center"
@@ -205,10 +257,34 @@ function useUploadAttachment(
 
           {[...files] &&
             [...files].map((file, index) => {
+              const ext = getUrlExt(file.name);
+              let content = <div></div>;
+              switch (ext) {
+                case "pdf":
+                  content = (
+                    <Box p={2}>
+                      <Image src={pdfImage} alt="PDF.png" />
+                    </Box>
+                  );
+                  break;
+
+                default:
+                  content = (
+                    <img src={file.preview} alt={file.path} width="100%" />
+                  );
+                  break;
+              }
               return (
                 <Grid item xs={4}>
-                  <Box p={1}>
-                    <img src={file.preview} alt={file.path} width="100%" />
+                  <Box
+                    p={1}
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Box height="100%">{content}</Box>
                     <Box
                       display="flex"
                       alignItems="center"
@@ -247,7 +323,9 @@ function useUploadAttachment(
                 ? `Browse/drop file here (Max ${maxLength} files)`
                 : "Browse/drop file here"}
             </Typography>
-            <Typography>{"*Only jpeg, jpg, png *File size < 5MB"}</Typography>
+            <Typography>
+              {"*Only jpeg, jpg, png, pdf *File size < 5MB"}
+            </Typography>
           </Box>
         </Box>
         <Box p={1}>

@@ -19,7 +19,7 @@ function CustomIcon({
     <Icon
       baseClassName={baseClassName[variant]}
       fontSize={size}
-      style={{
+      sx={{
         width: width,
         height: height,
         color: color ? color : "inherit",
