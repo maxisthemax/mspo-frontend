@@ -192,7 +192,7 @@ export const ticketNoCheck = async (
           resolve("Duplicated Ticket No. Found");
           resolveRefTicketNo = null;
         } else {
-          return false;
+          resolve(false);
         }
       }, 1000);
     });

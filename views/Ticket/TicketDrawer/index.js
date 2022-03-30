@@ -5,7 +5,6 @@ import "date-fns";
 //*lodash
 import toUpper from "lodash/toUpper";
 import round from "lodash/round";
-import uniqBy from "lodash/uniqBy";
 
 //*components
 import { TextFieldForm, TextField, DateFieldForm } from "components/Form";
