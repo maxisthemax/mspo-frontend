@@ -104,7 +104,9 @@ function TicketDrawer() {
     closeTicketDrawer();
   };
   const onSubmit = async (data, { restart }) => {
-    data.transporter = foundData?.transporter.id;
+    if (foundData?.transporter?.id)
+      data.transporter = foundData?.transporter.id;
+
     if (getTotalUploadedFiles() > 0) {
       const resData = await startUpload();
       if (resData.data) {
@@ -193,19 +195,14 @@ function TicketDrawer() {
                         ticketValueRef,
                         [...allTicketData?.data, foundData?.ticket],
                         handleSetFoundData,
-                        companyId
+                        companyId,
+                        initialValues?.ticket_no
                       )
                     }
                     size="small"
                     id="ticket_no"
                     label="Ticket No"
                   />
-                  {/* <TextFieldForm
-                    disabled={singleTicketDataIsLoading}
-                    label="Ticket No"
-                    name="ticket_no"
-                    required={true}
-                  /> */}
                   <Stack spacing={2}>
                     <DateFieldForm
                       label="Ticket Date"

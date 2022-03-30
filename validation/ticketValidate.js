@@ -124,8 +124,10 @@ export const ticketNoCheck = async (
   ticketValueRef,
   defaultData,
   handleSetFoundData,
-  companyId
+  companyId,
+  defaultValue
 ) => {
+  if (toLower(defaultValue) === toLower(value)) return false;
   if (ticketValueRef.current === value) return error ? error : false;
   ticketValueRef.current = value;
   clearTimeout(delayTimerTicketNo);
