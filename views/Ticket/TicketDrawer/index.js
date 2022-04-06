@@ -143,6 +143,7 @@ function TicketDrawer() {
             values,
             errors,
             validating,
+            active,
           }) => {
             const { first_weight, second_weight, deduction, price_per_mt } =
               values;
@@ -187,6 +188,7 @@ function TicketDrawer() {
               >
                 <Stack spacing={2}>
                   <TextField
+                    disabled={validating && active !== "ticket_no"}
                     name="ticket_no"
                     validate={(value) =>
                       ticketNoCheck(
@@ -205,6 +207,7 @@ function TicketDrawer() {
                   />
                   <Stack spacing={2}>
                     <DateFieldForm
+                      disabled={validating && active !== "ticket_date"}
                       label="Ticket Date"
                       name="ticket_date"
                       required={true}
@@ -212,6 +215,7 @@ function TicketDrawer() {
                   </Stack>
                   <Stack direction="row" spacing={1} alignItems="baseline">
                     <TextField
+                      disabled={validating && active !== "vehicle_no"}
                       name="vehicle_no"
                       validate={(value) =>
                         vehicleNoCheck(
@@ -237,6 +241,7 @@ function TicketDrawer() {
                     />
                     {errors?.vehicle_no === "Vehicle No. Not Found" && (
                       <Button
+                        disabled={validating}
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -257,14 +262,20 @@ function TicketDrawer() {
                   </Stack>
                   <Stack spacing={2} direction="row">
                     <TextFieldForm
-                      disabled={singleTicketDataIsLoading}
+                      disabled={
+                        singleTicketDataIsLoading ||
+                        (validating && active !== "first_weight")
+                      }
                       label="First Weight"
                       name="first_weight"
                       type="number"
                       onChange={onChangeExternal}
                     />
                     <TextFieldForm
-                      disabled={singleTicketDataIsLoading}
+                      disabled={
+                        singleTicketDataIsLoading ||
+                        (validating && active !== "second_weight")
+                      }
                       label="Second Weight"
                       name="second_weight"
                       type="number"
@@ -273,7 +284,10 @@ function TicketDrawer() {
                   </Stack>
                   <Stack spacing={2} direction="row">
                     <TextFieldForm
-                      disabled={singleTicketDataIsLoading}
+                      disabled={
+                        singleTicketDataIsLoading ||
+                        (validating && active !== "deduction")
+                      }
                       label="Deduction"
                       name="deduction"
                       type="number"
@@ -288,7 +302,10 @@ function TicketDrawer() {
                   </Stack>
                   <Stack spacing={2} direction="row">
                     <TextFieldForm
-                      disabled={singleTicketDataIsLoading}
+                      disabled={
+                        singleTicketDataIsLoading ||
+                        (validating && active !== "price_per_mt")
+                      }
                       label="Price per mt"
                       name="price_per_mt"
                       type="number"

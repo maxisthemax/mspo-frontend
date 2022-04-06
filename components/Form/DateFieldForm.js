@@ -13,11 +13,12 @@ const useStyles = makeStyles(() => ({
       },
   },
 }));
-function DateFieldForm({ name, label, required }) {
+function DateFieldForm({ name, label, required, disabled }) {
   const classes = useStyles();
   return (
     <Box className={classes.dateLabel}>
       <DatePicker
+        disabled={disabled}
         label={label}
         name={name}
         required={required}
