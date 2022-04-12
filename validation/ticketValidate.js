@@ -63,6 +63,10 @@ export const vehicleNoCheck = async (
   handleSetFoundData,
   companyId
 ) => {
+  const vehicleNo = toUpper(value);
+  if (!vehicleNo) {
+    return "Vehicle No Is Required";
+  }
   if (vehicleValueRef.current === value) return error ? error : false;
   vehicleValueRef.current = value;
   clearTimeout(delayTimerVehicleNo);
@@ -70,11 +74,6 @@ export const vehicleNoCheck = async (
   if (resolveRefVehicleNo) {
     resolveRefVehicleNo(isValidVehicleNo);
     resolveRefVehicleNo = null;
-  }
-
-  const vehicleNo = toUpper(value);
-  if (!vehicleNo) {
-    return "Vehicle No Is Required";
   }
 
   const data = find(uniqBy(defaultData, "id"), (data) => {
@@ -127,6 +126,11 @@ export const ticketNoCheck = async (
   companyId,
   defaultValue
 ) => {
+  const ticketNo = toLower(value);
+  if (!ticketNo) {
+    return "Ticket No Is Required";
+  }
+
   if (toLower(defaultValue) === toLower(value)) return false;
   if (ticketValueRef.current === value) return error ? error : false;
   ticketValueRef.current = value;
@@ -135,11 +139,6 @@ export const ticketNoCheck = async (
   if (resolveRefTicketNo) {
     resolveRefTicketNo(isValidTicketNo);
     resolveRefTicketNo = null;
-  }
-
-  const ticketNo = toLower(value);
-  if (!ticketNo) {
-    return "Ticket No Is Required";
   }
 
   const data = find(uniqBy(defaultData, "id"), (data) => {
