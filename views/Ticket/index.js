@@ -94,7 +94,7 @@ function Ticket() {
         Cell: ({ value }) => {
           return (
             <span>
-              {value.name} - {value.vehicle_no}
+              {value?.name} - {value?.vehicle_no}
             </span>
           );
         },

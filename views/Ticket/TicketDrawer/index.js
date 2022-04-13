@@ -1,5 +1,4 @@
 import { Form } from "react-final-form";
-import { useState, useRef } from "react";
 import "date-fns";
 
 //*lodash
@@ -23,17 +22,18 @@ import { ticketDrawerStore } from "views/Ticket";
 import { transporterDrawerStore } from "views/Transporter";
 
 //*validation
-import { ticketNoCheck, ticketValidate, vehicleNoCheck } from "validation";
+import { ticketValidate } from "validation";
 
 //*useSwr
 import useUser from "useSwr/user/useUser";
 import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 import useGetSingleTicket from "useSwr/ticket/useGetSingleTicket";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
+import useCheckDuplicate from "validation/useCheckDuplicate";
+import useCheckExist from "validation/useCheckExist";
 
 function TicketDrawer() {
   //*useState
-  const [foundData, setFoundData] = useState({});
 
   //*zustand
   const ticketDrawerOpen = ticketDrawerStore((state) => state.open);
@@ -89,23 +89,35 @@ function TicketDrawer() {
         };
 
   //*useRef
-  const vehicleValueRef = useRef("");
-  const ticketValueRef = useRef("");
+
+  //*useFunction
+  const { checkDuplicate } = useCheckDuplicate({
+    collectionId: "tickets",
+    defaultData: allTicketData?.data,
+    companyId,
+    name: "ticket_no",
+    label: "Ticket No.",
+  });
+  const {
+    checkExist,
+    foundData: foundTransporterData,
+    setFoundData: setFoundTransporterData,
+  } = useCheckExist({
+    collectionId: "transporters",
+    defaultData: allTransporterData?.data,
+    companyId,
+    name: "vehicle_no",
+    label: "Vehicle No.",
+  });
 
   //*function
-  const handleSetFoundData = (field, data) => {
-    setFoundData((foundData) => {
-      foundData[field] = data;
-      return foundData;
-    });
-  };
   const handleCloseTicketDrawer = () => {
-    setFoundData({});
     closeTicketDrawer();
+    setFoundTransporterData(null);
   };
+
   const onSubmit = async (data, { restart }) => {
-    if (foundData?.transporter?.id)
-      data.transporter = foundData?.transporter.id;
+    if (foundTransporterData?.id) data.transporter = foundTransporterData.id;
 
     if (getTotalUploadedFiles() > 0) {
       const resData = await startUpload();
@@ -115,8 +127,8 @@ function TicketDrawer() {
     }
 
     mode === "add" ? await addSingleTicket(data) : await editSingleTicket(data);
-    setFoundData({});
     restart();
+    setFoundTransporterData(null);
   };
 
   const handleDeleteTicket = async () => {
@@ -191,13 +203,9 @@ function TicketDrawer() {
                     disabled={validating && active !== "ticket_no"}
                     name="ticket_no"
                     validate={(value) =>
-                      ticketNoCheck(
+                      checkDuplicate(
                         value,
                         errors["ticket_no"],
-                        ticketValueRef,
-                        [...allTicketData?.data, foundData?.ticket],
-                        handleSetFoundData,
-                        companyId,
                         initialValues?.ticket_no
                       )
                     }
@@ -218,13 +226,10 @@ function TicketDrawer() {
                       disabled={validating && active !== "vehicle_no"}
                       name="vehicle_no"
                       validate={(value) =>
-                        vehicleNoCheck(
+                        checkExist(
                           value,
                           errors["vehicle_no"],
-                          vehicleValueRef,
-                          [...allTransporterData?.data, foundData?.transporter],
-                          handleSetFoundData,
-                          companyId
+                          initialValues?.vehicle_no
                         )
                       }
                       disabledKeycode={["Space"]}
@@ -232,8 +237,8 @@ function TicketDrawer() {
                       id="vehicle_no"
                       label="Vehicle No"
                       helperText={
-                        foundData?.transporter &&
-                        `Transporter Name: ${foundData?.transporter?.attributes?.name}`
+                        foundTransporterData &&
+                        `Transporter Name: ${foundTransporterData?.attributes?.name}`
                       }
                       inputProps={{
                         style: { textTransform: "uppercase" },
