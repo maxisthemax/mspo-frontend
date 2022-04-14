@@ -25,7 +25,6 @@ import { transporterDrawerStore } from "views/Transporter";
 import { ticketValidate } from "validation";
 
 //*useSwr
-import useUser from "useSwr/user/useUser";
 import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 import useGetSingleTicket from "useSwr/ticket/useGetSingleTicket";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
@@ -44,7 +43,6 @@ function TicketDrawer() {
   );
 
   //*define
-  const { userData } = useUser();
   const { Dialog, handleOpenDialog } = useDialog();
 
   //*userSwr
@@ -60,7 +58,6 @@ function TicketDrawer() {
   const allTicketDataAttribute = singleTicketData?.data?.attributes;
 
   //*const
-  const companyId = userData?.company?.id;
   const attachments = allTicketDataAttribute?.attachments?.data || [];
   const { startUpload, getTotalUploadedFiles, uploadAttachment } =
     useUploadAttachment(
@@ -94,7 +91,6 @@ function TicketDrawer() {
   const { checkDuplicate } = useCheckDuplicate({
     collectionId: "tickets",
     defaultData: allTicketData?.data,
-    companyId,
     name: "ticket_no",
     label: "Ticket No.",
   });
@@ -105,7 +101,6 @@ function TicketDrawer() {
   } = useCheckExist({
     collectionId: "transporters",
     defaultData: allTransporterData?.data,
-    companyId,
     name: "vehicle_no",
     label: "Vehicle No.",
   });

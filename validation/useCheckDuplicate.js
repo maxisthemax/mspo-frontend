@@ -13,6 +13,9 @@ import startCase from "lodash/startCase";
 //*lib
 import { getStrapiURL } from "lib/api";
 
+//*useSwr
+import useUser from "useSwr/user/useUser";
+
 let delayTimer = null;
 let isValid = false;
 let resolveRef = null;
@@ -20,7 +23,6 @@ let resolveRef = null;
 function useCheckDuplicate({
   collectionId,
   defaultData,
-  companyId,
   name,
   label,
   isRequired = true,
@@ -31,6 +33,8 @@ function useCheckDuplicate({
   const [foundData, setFoundData] = useState();
 
   //*const
+  const { userData } = useUser();
+  const companyId = userData?.company?.id;
 
   //*let
 
