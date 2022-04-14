@@ -1,7 +1,7 @@
 import { Form } from "react-final-form";
 
 //*components
-import { TextFieldForm } from "components/Form";
+import { TextFieldForm, TextField } from "components/Form";
 import { Button } from "components/Buttons";
 import { useDialog } from "components/Dialogs";
 import { GlobalDrawer } from "components/Drawers";
@@ -20,6 +20,7 @@ import { transporterValidate } from "validation";
 //*useSwr
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
 import useGetSingleTransporter from "useSwr/transporter/useGetSingleTransporter";
+import useCheckDuplicate from "validation/useCheckDuplicate";
 
 function TransporterDrawer() {
   //*zustand
@@ -32,10 +33,13 @@ function TransporterDrawer() {
 
   //*const
   const { Dialog, handleOpenDialog } = useDialog();
-  const { addSingleTransporter, deleteSingleTransporter } =
+  const { allTransporterData, addSingleTransporter, deleteSingleTransporter } =
     useGetAllTransporter();
-  const { singleTransporterData, editSingleTransporter } =
-    useGetSingleTransporter(transporterId);
+  const {
+    singleTransporterData,
+    editSingleTransporter,
+    singleTransporterDataIsLoading,
+  } = useGetSingleTransporter(transporterId);
   const dataAttribute = singleTransporterData?.data?.attributes;
   const initialValues =
     mode === "add"
@@ -63,6 +67,13 @@ function TransporterDrawer() {
     await deleteSingleTransporter(transporterId);
     closeTransporterDrawer();
   };
+  //*useFunction
+  const { checkDuplicate } = useCheckDuplicate({
+    collectionId: "transporters",
+    defaultData: allTransporterData?.data,
+    name: "vehicle_no",
+    label: "Vehicle No.",
+  });
 
   return (
     <GlobalDrawer
@@ -79,7 +90,14 @@ function TransporterDrawer() {
           validate={transporterValidate}
           onSubmit={onSubmit}
           validateOnBlur={false}
-          render={({ handleSubmit, submitting, form: { restart } }) => {
+          render={({
+            handleSubmit,
+            submitting,
+            form: { restart },
+            validating,
+            active,
+            errors,
+          }) => {
             return (
               <form
                 id="userForm"
@@ -91,22 +109,43 @@ function TransporterDrawer() {
               >
                 <Stack spacing={2}>
                   <TextFieldForm
+                    disabled={validating && active !== "name"}
                     label="Transporter Name"
                     name="name"
                     required={true}
                   />
-                  <TextFieldForm
-                    label="Vehicle No."
+                  <TextField
+                    disabled={validating && active !== "vehicle_no"}
                     name="vehicle_no"
+                    validate={(value) =>
+                      checkDuplicate(
+                        value,
+                        errors["vehicle_no"],
+                        initialValues?.vehicle_no
+                      )
+                    }
+                    size="small"
+                    id="vehicle_no"
+                    label="Vehicle No"
+                    inputProps={{
+                      style: { textTransform: "uppercase" },
+                    }}
                     disabledKeycode={["Space"]}
                   />
                   <TextFieldForm
+                    disabled={validating && active !== "address"}
                     label="Address"
                     name="address"
                     multiline
                     rows={3}
                   />
-                  <Button type="submit" size="large" disabled={submitting}>
+                  <Button
+                    disabled={
+                      submitting || singleTransporterDataIsLoading || validating
+                    }
+                    type="submit"
+                    size="large"
+                  >
                     {mode === "add" ? "Create" : "Edit"}
                   </Button>
                   {mode === "edit" && (
