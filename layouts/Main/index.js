@@ -7,6 +7,9 @@ import { useRouter } from "next/router";
 
 //*components
 import { CustomIcon } from "components/Icons";
+import TransporterDrawer from "views/Transporter/TransporterDrawer";
+import TicketDrawer from "views/Ticket/TicketDrawer";
+import CustomerDrawer from "views/Customer/CustomerDrawer";
 
 //*material-ui
 import AppBar from "@mui/material/AppBar";
@@ -25,8 +28,6 @@ import { pages } from "utils/constant";
 
 //*useSwr
 import useUser from "useSwr/user/useUser";
-import TransporterDrawer from "views/Transporter/TransporterDrawer";
-import TicketDrawer from "views/Ticket/TicketDrawer";
 
 function Main({ children }) {
   //*define
@@ -128,6 +129,7 @@ function Main({ children }) {
       </Container>
       <TransporterDrawer />
       <TicketDrawer />
+      <CustomerDrawer />
     </>
   );
 }

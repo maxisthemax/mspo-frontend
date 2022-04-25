@@ -5,3 +5,4 @@ export {
   vehicleNoCheck,
   ticketNoCheck,
 } from "./ticketValidate";
+export { default as customerValidate } from "./customerValidate";
