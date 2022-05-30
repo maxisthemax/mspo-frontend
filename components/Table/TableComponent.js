@@ -159,7 +159,7 @@ function TableComponent({
       });
       setSort(sortState);
     } else {
-      resetSort();
+      resetSort && resetSort();
     }
   }, [sortBy]);
 
