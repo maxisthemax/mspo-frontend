@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model buyers {
+  buyerName     String   @db.VarChar(200)
+  buyerId       Int      @id @default(autoincrement())
+  buyerAdd      String   @db.VarChar(200)
+  buyerCategory Int
+  mspoLicNo     String   @db.VarChar(200)
+  mpobLicNo     String   @db.VarChar(200)
+  createdDate   DateTime @default(now()) @db.Timestamp(0)
+  coId          Int      @db.SmallInt
+  disabled      Int      @default(0)
+
+  @@index([buyerId], map: "buyerId")
+  @@index([coId], map: "coId")
+}
+
+model company {
+  coId        Int      @id @default(autoincrement())
+  coName      String   @db.VarChar(100)
+  coAdd       String?  @db.VarChar(100)
+  coTel       String?  @db.VarChar(100)
+  deactivated Int      @default(0) @db.MediumInt
+  createdDate DateTime @default(now()) @db.Timestamp(0)
+  maxCust     Int
+  maxUsers    Int
+
+  @@index([coId], map: "coId")
+}
+
+model customers {
+  coId        Int
+  custId      Int      @id @default(autoincrement())
+  custNo      String   @db.VarChar(100)
+  custName    String   @db.VarChar(100)
+  custIC      String   @db.VarChar(100)
+  custTel     String   @db.VarChar(100)
+  custAdd1    String?  @db.VarChar(100)
+  custAdd2    String?  @db.VarChar(100)
+  custAdd3    String?  @db.VarChar(100)
+  deactivated Int      @default(0) @db.SmallInt
+  createdDate DateTime @default(now()) @db.Timestamp(0)
+  disabled    Int      @default(0) @db.SmallInt
+  compNo      String   @db.VarChar(200)
+
+  @@unique([coId, custIC], map: "uniq_coId_custIC")
+  @@unique([coId, custNo], map: "uniq_coId_custNo")
+  @@index([custId], map: "custId")
+}
+
+model lands {
+  landId          Int      @id @default(autoincrement())
+  lotNo           String   @db.VarChar(200)
+  titleNo         String   @db.VarChar(200)
+  area            Float
+  custId          Int
+  usageOfLand     String   @db.VarChar(200)
+  typeOfCondition String   @db.VarChar(200)
+  gpsLocationLng  Float
+  gpsLocationLat  Float
+  coId            Int
+  createdDate     DateTime @default(now()) @db.Timestamp(0)
+  disabled        Int      @default(0) @db.SmallInt
+  mukim           String   @db.VarChar(200)
+  yearPlanted     Int
+  isMSPO          Int      @db.SmallInt
+
+  @@index([coId], map: "coId")
+  @@index([custId], map: "custId")
+  @@index([landId], map: "landId")
+}
+
+model mpobs {
+  mpobId      Int      @id @default(autoincrement())
+  mpobLicNo   String   @db.VarChar(200)
+  expiredDate DateTime @db.DateTime(0)
+  custId      Int
+  createdDate DateTime @default(now()) @db.Timestamp(0)
+  disabled    Int      @default(0)
+  coId        Int
+  landId      String   @db.VarChar(200)
+  mspoId      Int
+
+  @@unique([mpobLicNo, coId], map: "uniq_mpobLicNo_coId")
+  @@index([custId], map: "custId")
+  @@index([landId], map: "landId")
+  @@index([mpobId], map: "mpodId")
+  @@index([mspoId], map: "mspoId")
+}
+
+model mspos {
+  mspoId      Int       @id @default(autoincrement())
+  mspoCertNo  String    @db.VarChar(200)
+  expiredDate DateTime  @db.DateTime(0)
+  standard    String    @db.LongText
+  disabled    Int       @default(0) @db.SmallInt
+  coId        Int
+  createdDate DateTime? @default(now()) @db.Timestamp(0)
+  mspoRegNo   String    @db.VarChar(200)
+
+  @@unique([mspoCertNo, coId], map: "uniq_mspoCertNo_coId")
+  @@index([mspoId], map: "mspoId")
+}
+
+model sales {
+  saleId        Int      @id @default(autoincrement())
+  saleDate      DateTime @db.DateTime(0)
+  saleNo        String   @db.VarChar(200)
+  vehicleNo     String   @db.VarChar(200)
+  transporterId Int
+  buyerId       Int
+  firstWeight   Float
+  secondWeight  Float
+  deduction     Float
+  nettWeight    Float
+  totalPrice    Float
+  oer           Float
+  priceMt       Float
+  createdDate   DateTime @default(now()) @db.Timestamp(0)
+  coId          Int
+  disabled      Int      @default(0) @db.SmallInt
+
+  @@index([buyerId], map: "buyerId")
+  @@index([coId], map: "coId")
+  @@index([saleId], map: "saleId")
+  @@index([transporterId], map: "transporterId")
+}
+
+model tickets {
+  ticketId      Int           @id @default(autoincrement())
+  custId        Int
+  ticketDate    DateTime      @db.DateTime(0)
+  ticketNo      String        @db.VarChar(200)
+  vehicleNo     String        @db.VarChar(200)
+  transporterId Int?
+  buyerId       Int
+  firstWeight   Float
+  secondWeight  Float
+  deduction     Float
+  nettWeight    Float
+  totalPrice    Float
+  oer           Float
+  priceMt       Float
+  createdDate   DateTime      @default(now()) @db.Timestamp(0)
+  coId          Int
+  disabled      Int           @default(0) @db.SmallInt
+  landId        Int
+  transporters  transporters? @relation(fields: [transporterId], references: [transporterId])
+
+  @@index([buyerId], map: "buyerId")
+  @@index([coId], map: "coId")
+  @@index([custId], map: "custId")
+  @@index([ticketId], map: "ticketId")
+  @@index([transporterId], map: "transporterId")
+}
+
+model transporters {
+  transporterId        Int       @id @default(autoincrement())
+  transporterName      String    @db.VarChar(200)
+  transporterAdd       String    @db.VarChar(200)
+  transporterVehNo     String    @db.VarChar(200)
+  priceMt              Float
+  totalTransporterCost Float
+  disabled             Int       @default(0)
+  createdDate          DateTime  @default(now()) @db.Timestamp(0)
+  coId                 Int
+  tickets              tickets[]
+
+  @@index([coId], map: "coId")
+  @@index([transporterId], map: "transporterId")
+}
+
+model users {
+  userId        Int      @id @default(autoincrement())
+  username      String   @unique(map: "userName") @db.VarChar(200)
+  userpassword  String   @db.VarChar(200)
+  displayname   String   @db.VarChar(200)
+  email         String   @db.VarChar(200)
+  deactivated   Int      @default(0) @db.SmallInt
+  administrator Int      @db.SmallInt
+  coId          Int
+  createdDate   DateTime @default(now()) @db.Timestamp(0)
+  token         String   @db.VarChar(200)
+
+  @@index([coId], map: "coId")
+  @@index([userId], map: "userId")
+}

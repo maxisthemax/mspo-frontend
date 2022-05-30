@@ -1,92 +1,32 @@
 import { useEffect, useState } from "react";
-import axiosStrapi from "utils/http-anxios";
+import axios from "axios";
 import { useSnackbar } from "notistack";
 
 //*useSwr
-import useSwrHttp from "useSwr/useSwrHttp";
-import useUser from "useSwr/user/useUser";
+import useSwr from "swr";
 
-export default function useGetAllTicket(pageSizeDefault = 25) {
+export default function useGetAllTicket() {
   //*define
   const { enqueueSnackbar } = useSnackbar();
-  const { userData } = useUser();
-  const companyId = userData?.company?.id;
+  const coId = 2; //temporarily define
 
   //*useState
-  const [search, setSearch] = useState();
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(pageSizeDefault);
-  const [sort, setSort] = useState(["createdAt:desc"]);
   const [isLoading, setIsLoading] = useState(false);
 
   //*useSwr
-  const { data, mutate, error, isValidating } = useSwrHttp(
-    companyId ? "tickets" : null,
-    {
-      filters: {
-        company: {
-          id: {
-            $eq: companyId || "",
-          },
-        },
-        ...search,
-      },
-      pagination: { page, pageSize },
-      sort: sort,
-      populate: ["transporter"],
-    }
+  const { data, mutate, error, isValidating } = useSwr(
+    `http://localhost:3000/api/tickets/getAll?coId=${coId}`
   );
 
   //*function
-  const addSingleTicket = async ({
-    ticket_no,
-    first_weight,
-    second_weight,
-    deduction,
-    nett_weight,
-    price_per_mt,
-    total_price,
-    transporter,
-    ticket_date,
-    attachments,
-  }) => {
+  const addSingleTicket = async (data) => {
     setIsLoading(true);
     try {
-      await axiosStrapi.post("tickets", {
-        data: {
-          ticket_no,
-          first_weight,
-          transporter,
-          second_weight,
-          deduction: deduction || 0,
-          price_per_mt,
-          total_price,
-          nett_weight,
-          ticket_date,
-          company: companyId,
-          attachments,
-        },
+      await axios.post("http://localhost:3000/api/tickets/add", {
+        coId: 2,
+        ...data,
       });
-      enqueueSnackbar(`Ticket ${ticket_no} Added Success`, {
-        variant: "success",
-      });
-      resetAllTicketSort();
-      mutate();
-    } catch (error) {
-      if (error?.response?.data?.error?.message)
-        enqueueSnackbar(error?.response?.data?.error?.message, {
-          variant: "error",
-        });
-    }
-    setIsLoading(false);
-  };
-
-  const deleteSingleTicket = async (id) => {
-    setIsLoading(true);
-    try {
-      const deletedData = find(data.data, { id: id });
-      await axiosStrapi.delete(`tickets/${id}`);
-      enqueueSnackbar(`Tickets ${deletedData.attributes.ticket_no} Deleted`, {
+      enqueueSnackbar(`Ticket ${data.ticketNo} Added Success`, {
         variant: "success",
       });
       mutate();
@@ -97,10 +37,6 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
         });
     }
     setIsLoading(false);
-  };
-
-  const resetAllTicketSort = () => {
-    setSort(["createdAt:desc"]);
   };
 
   //*useEffect
@@ -117,15 +53,5 @@ export default function useGetAllTicket(pageSizeDefault = 25) {
     allTicketDataIsValidating: isValidating,
     allTicketDataIsLoading: isLoading,
     addSingleTicket,
-    allTicketPage: page,
-    setAllTicketPage: setPage,
-    allTicketPageSize: pageSize,
-    setAllTicketPageSize: setPageSize,
-    allTicketSort: sort,
-    setAllTicketSort: setSort,
-    resetAllTicketSort,
-    deleteSingleTicket,
-    allTicketSearch: search,
-    setAllTicketSearch: setSearch,
   };
 }
