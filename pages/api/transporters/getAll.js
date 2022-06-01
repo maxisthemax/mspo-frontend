@@ -7,9 +7,8 @@ export default async function handler(req, res) {
     try {
       const coId = req.query.coId;
 
-      const data = await prisma.tickets.findMany({
+      const data = await prisma.transporters.findMany({
         where: { AND: [coId ? { coId: parseInt(coId) } : {}] },
-        include: { transporters: true },
         orderBy: { createdDate: "desc" },
       });
       res.json(data);

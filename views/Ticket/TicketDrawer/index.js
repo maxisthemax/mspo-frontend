@@ -1,7 +1,12 @@
 import { Form } from "react-final-form";
 import "date-fns";
+import { Autocomplete } from "mui-rff";
 
 //*lodash
+import find from "lodash/find";
+import toLower from "lodash/toLower";
+import trim from "lodash/trim";
+import replace from "lodash/replace";
 import toUpper from "lodash/toUpper";
 import round from "lodash/round";
 
@@ -28,8 +33,6 @@ import { ticketValidate } from "validation";
 import useGetAllTicket from "useSwr/ticket/useGetAllTicket";
 import useGetSingleTicket from "useSwr/ticket/useGetSingleTicket";
 import useGetAllTransporter from "useSwr/transporter/useGetAllTransporter";
-import useCheckDuplicate from "validation/useCheckDuplicate";
-import useCheckExist from "validation/useCheckExist";
 
 function TicketDrawer() {
   //*useState
@@ -54,9 +57,9 @@ function TicketDrawer() {
     singleTicketDataIsLoading,
     mutateSingleTicketData,
   } = useGetSingleTicket(ticketId);
-  const { allTransporterData } = useGetAllTransporter(100);
+  const { allTransporterData } = useGetAllTransporter();
   const allTicketDataAttribute = singleTicketData?.data?.attributes;
-
+  console.log(allTransporterData);
   //*const
   const attachments = allTicketDataAttribute?.attachments?.data || [];
   const { startUpload, getTotalUploadedFiles, uploadAttachment } =
@@ -88,32 +91,19 @@ function TicketDrawer() {
   //*useRef
 
   //*useFunction
-  const { checkDuplicate } = useCheckDuplicate({
-    collectionId: "tickets",
-    defaultData: allTicketData?.data,
-    name: "ticket_no",
-    label: "Ticket No.",
-  });
-  const {
-    checkExist,
-    foundData: foundTransporterData,
-    setFoundData: setFoundTransporterData,
-  } = useCheckExist({
-    collectionId: "transporters",
-    defaultData: allTransporterData?.data,
-    name: "vehicle_no",
-    label: "Vehicle No.",
-  });
 
   //*function
   const handleCloseTicketDrawer = () => {
     closeTicketDrawer();
-    setFoundTransporterData(null);
   };
 
   const onSubmit = async (data, { restart }) => {
-    if (foundTransporterData?.id) data.transporter = foundTransporterData.id;
-
+    const foundTransporterData = find(allTransporterData, (transporterData) => {
+      return (
+        replace(trim(toLower(transporterData?.transporterVehNo)), " ", "") ===
+        replace(trim(toLower(data.vehicleNo)), " ", "")
+      );
+    });
     if (getTotalUploadedFiles() > 0) {
       const resData = await startUpload();
       if (resData.data) {
@@ -121,9 +111,13 @@ function TicketDrawer() {
       }
     }
 
-    mode === "add" ? await addSingleTicket(data) : await editSingleTicket(data);
+    mode === "add"
+      ? await addSingleTicket({
+          ...data,
+          transporterId: foundTransporterData.transporterId,
+        })
+      : await editSingleTicket(data);
     restart();
-    setFoundTransporterData(null);
   };
 
   const handleDeleteTicket = async () => {
@@ -141,40 +135,41 @@ function TicketDrawer() {
 
         <Form
           initialValues={initialValues}
-          validate={ticketValidate}
+          validate={ticketValidate({
+            allTransporterData,
+            allTicketData,
+          })}
           onSubmit={onSubmit}
           render={({
             handleSubmit,
             submitting,
-            form: { blur, change },
+            form: { change },
             values,
             errors,
             validating,
-            active,
           }) => {
-            const { first_weight, second_weight, deduction, price_per_mt } =
-              values;
+            const { firstWeight, secondWeight, deduction, priceMt } = values;
             const onChangeExternal = (e) => {
               const name = e.target.name;
               const value = e.target.value;
 
               const changeValue = {
-                first_weight,
-                second_weight,
+                firstWeight,
+                secondWeight,
                 deduction,
-                price_per_mt,
+                priceMt,
               };
               changeValue[name] = value;
               change(name, value);
               const nettWeight =
-                (changeValue.first_weight || 0) -
-                (changeValue.second_weight || 0) -
+                (changeValue.firstWeight || 0) -
+                (changeValue.secondWeight || 0) -
                 (changeValue.deduction || 0);
-              change("nett_weight", round(nettWeight, 2));
+              change("nettWeight", round(nettWeight, 2));
               change(
-                "total_price",
+                "totalPrice",
                 round(
-                  round((nettWeight || 0) * (changeValue.price_per_mt || 0), 2),
+                  round((nettWeight || 0) * (changeValue.priceMt || 0), 2),
                   2
                 )
               );
@@ -185,9 +180,6 @@ function TicketDrawer() {
                 id="ticketForm"
                 onSubmit={async (event) => {
                   event.preventDefault();
-                  if (errors?.vehicle_no) {
-                    blur("vehicle_no");
-                  }
                   await handleSubmit(event);
                 }}
                 noValidate
@@ -195,50 +187,44 @@ function TicketDrawer() {
               >
                 <Stack spacing={2}>
                   <TextField
-                    disabled={validating && active !== "ticket_no"}
-                    name="ticket_no"
-                    validate={(value) =>
-                      checkDuplicate(
-                        value,
-                        errors["ticket_no"],
-                        initialValues?.ticket_no
-                      )
-                    }
+                    disabled={singleTicketDataIsLoading}
+                    name="ticketNo"
                     size="small"
-                    id="ticket_no"
-                    label="Ticket No"
+                    id="ticketNo"
+                    label="Ticket No."
                   />
                   <Stack spacing={2}>
                     <DateFieldForm
-                      disabled={validating && active !== "ticket_date"}
+                      disabled={singleTicketDataIsLoading}
                       label="Ticket Date"
-                      name="ticket_date"
+                      name="ticketDate"
                       required={true}
                     />
                   </Stack>
                   <Stack direction="row" spacing={1} alignItems="baseline">
-                    <TextField
-                      disabled={validating && active !== "vehicle_no"}
-                      name="vehicle_no"
-                      validate={(value) =>
-                        checkExist(
-                          value,
-                          errors["vehicle_no"],
-                          initialValues?.vehicle_no
-                        )
-                      }
-                      disabledKeycode={["Space"]}
+                    <Autocomplete
+                      label="Vehicle No."
+                      name="transporterId"
                       size="small"
-                      id="vehicle_no"
-                      label="Vehicle No"
-                      helperText={
-                        foundTransporterData &&
-                        `Transporter Name: ${foundTransporterData?.attributes?.name}`
-                      }
-                      inputProps={{
-                        style: { textTransform: "uppercase" },
+                      required={true}
+                      options={allTransporterData}
+                      getOptionValue={(option) => {
+                        return option.transporterId;
                       }}
+                      getOptionLabel={(option) => {
+                        return `${option.transporterName} - ${option.transporterVehNo}`;
+                      }}
+                      disableCloseOnSelect={true}
+                      fullWidth
                     />
+
+                    {/* <TextField
+                      disabled={singleTicketDataIsLoading}
+                      name="vehicleNo"
+                      size="small"
+                      id="vehicleNo"
+                      label="Vehicle No."
+                    /> */}
                     {errors?.vehicle_no === "Vehicle No. Not Found" && (
                       <Button
                         disabled={validating}
@@ -262,32 +248,23 @@ function TicketDrawer() {
                   </Stack>
                   <Stack spacing={2} direction="row">
                     <TextFieldForm
-                      disabled={
-                        singleTicketDataIsLoading ||
-                        (validating && active !== "first_weight")
-                      }
+                      disabled={singleTicketDataIsLoading}
                       label="First Weight"
-                      name="first_weight"
+                      name="firstWeight"
                       type="number"
                       onChange={onChangeExternal}
                     />
                     <TextFieldForm
-                      disabled={
-                        singleTicketDataIsLoading ||
-                        (validating && active !== "second_weight")
-                      }
+                      disabled={singleTicketDataIsLoading}
                       label="Second Weight"
-                      name="second_weight"
+                      name="secondWeight"
                       type="number"
                       onChange={onChangeExternal}
                     />
                   </Stack>
                   <Stack spacing={2} direction="row">
                     <TextFieldForm
-                      disabled={
-                        singleTicketDataIsLoading ||
-                        (validating && active !== "deduction")
-                      }
+                      disabled={singleTicketDataIsLoading}
                       label="Deduction"
                       name="deduction"
                       type="number"
@@ -296,25 +273,22 @@ function TicketDrawer() {
                     <TextFieldForm
                       disabled={true}
                       label="Nett Weight"
-                      name="nett_weight"
+                      name="nettWeight"
                       type="number"
                     />
                   </Stack>
                   <Stack spacing={2} direction="row">
                     <TextFieldForm
-                      disabled={
-                        singleTicketDataIsLoading ||
-                        (validating && active !== "price_per_mt")
-                      }
+                      disabled={singleTicketDataIsLoading}
                       label="Price per mt"
-                      name="price_per_mt"
+                      name="priceMt"
                       type="number"
                       onChange={onChangeExternal}
                     />
                     <TextFieldForm
                       disabled={true}
                       label="Total Price"
-                      name="total_price"
+                      name="totalPrice"
                       type="number"
                     />
                   </Stack>

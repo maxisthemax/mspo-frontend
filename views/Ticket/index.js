@@ -26,16 +26,8 @@ function Ticket() {
   );
 
   //*useSwr
-  const {
-    allTicketData,
-    allTicketDataIsLoading,
-    allTicketDataIsValidating,
-    allTicketPage,
-    resetAllTicketSort,
-    setAllTicketPage,
-    setAllTicketPageSize,
-    setAllTicketSort,
-  } = useGetAllTicket();
+  const { allTicketData, allTicketDataIsLoading, allTicketDataIsValidating } =
+    useGetAllTicket();
 
   //*const
   const rowsPerPage = allTicketData?.meta?.pagination?.pageSize;
@@ -43,12 +35,12 @@ function Ticket() {
 
   //*useMemo
   const data = useMemo(() => {
-    const returnData = map(allTicketData?.data, (data) => {
-      const transporterData = data.attributes.transporter.data;
+    const returnData = map(allTicketData, (data) => {
       return {
-        id: data.id,
-        ...data.attributes,
-        transporter: transporterData?.attributes,
+        ...data,
+        transporterValue: data.transporters?.transporterName
+          ? ` ${data.transporters?.transporterName} - ${data.transporters?.transporterVehNo}`
+          : "No Transporter",
         handleOpenTicketDrawer: () =>
           openTicketDrawer({
             params: {
@@ -57,9 +49,10 @@ function Ticket() {
             },
           }),
         handleOpenTransporterDrawer: () =>
+          data.transporters?.transporterId &&
           openTransporterDrawer({
             params: {
-              transporterId: transporterData?.id,
+              transporterId: data.transporters.transporterId,
               mode: "edit",
             },
           }),
@@ -78,37 +71,31 @@ function Ticket() {
       },
       {
         Header: "Ticket No",
-        accessor: "ticket_no",
+        accessor: "ticketNo",
         click: "handleOpenTicketDrawer",
       },
       {
         Header: "Ticket Date",
-        accessor: "ticket_date",
+        accessor: "ticketDate",
         type: "date",
+        sortType: "datetime",
         disableFilters: true,
       },
       {
         Header: "Transporter",
-        accessor: "transporter",
+        accessor: "transporterValue",
         click: "handleOpenTransporterDrawer",
-        Cell: ({ value }) => {
-          return (
-            <span>
-              {value?.name} - {value?.vehicle_no}
-            </span>
-          );
-        },
       },
       {
         Header: "First Weight",
-        accessor: "first_weight",
+        accessor: "firstWeight",
         disableFilters: true,
         type: "number",
         inExpand: true,
       },
       {
         Header: "Second Weight",
-        accessor: "second_weight",
+        accessor: "secondWeight",
         disableFilters: true,
         type: "number",
         inExpand: true,
@@ -122,21 +109,21 @@ function Ticket() {
       },
       {
         Header: "Nett Weight",
-        accessor: "nett_weight",
+        accessor: "nettWeight",
         disableFilters: true,
         type: "number",
         inExpand: true,
       },
       {
         Header: "Price Per MT",
-        accessor: "price_per_mt",
+        accessor: "priceMt",
         disableFilters: true,
         type: "number",
         inExpand: true,
       },
       {
         Header: "Total Price",
-        accessor: "total_price",
+        accessor: "totalPrice",
         disableFilters: true,
         type: "number",
         inExpand: true,
@@ -163,11 +150,6 @@ function Ticket() {
         columns={columns}
         rowsPerPage={rowsPerPage}
         total={total}
-        page={allTicketPage}
-        setPage={setAllTicketPage}
-        setPageSize={setAllTicketPageSize}
-        setSort={setAllTicketSort}
-        resetSort={resetAllTicketSort}
         isLoading={allTicketDataIsValidating || allTicketDataIsLoading}
       />
     </Box>

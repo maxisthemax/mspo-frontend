@@ -1,9 +1,14 @@
-import { useMemo, useEffect, useCallback, Fragment } from "react";
-import { useTable, useFilters, useSortBy, useExpanded } from "react-table";
+import { useMemo, useCallback, Fragment } from "react";
+import {
+  useTable,
+  useFilters,
+  useSortBy,
+  useExpanded,
+  usePagination,
+} from "react-table";
 import moment from "moment";
 
 //*lodash
-import map from "lodash/map";
 import filter from "lodash/filter";
 
 //*components
@@ -108,21 +113,11 @@ function TablePaginationActions(props) {
   );
 }
 
-function TableComponent({
-  data,
-  columns,
-  rowsPerPage = 0,
-  total = 0,
-  page,
-  setPage,
-  setPageSize,
-  setSort,
-  resetSort,
-  isLoading,
-}) {
+function TableComponent({ data, columns, isLoading }) {
   //*define
 
   //*const
+  const total = data.length || 0;
 
   //*useMemo
   const defaultColumn = useMemo(
@@ -132,45 +127,39 @@ function TableComponent({
     []
   );
 
+  //useState
+
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
     prepareRow,
-    state: { sortBy },
+    state: { pageIndex, pageSize },
     visibleColumns,
+    setPageSize,
+    gotoPage,
   } = useTable(
     {
+      initialState: { pageSize: 25 },
       columns,
       data,
       defaultColumn,
-      manualSortBy: true,
     },
     useFilters,
     useSortBy,
-    useExpanded
+    useExpanded,
+    usePagination
   );
-
-  useEffect(() => {
-    if (sortBy.length > 0) {
-      const sortState = map(sortBy, (data) => {
-        return `${data.id}:${data.desc ? "desc" : "asc"}`;
-      });
-      setSort(sortState);
-    } else {
-      resetSort && resetSort();
-    }
-  }, [sortBy]);
 
   //*functions
   const handleChangePage = useCallback((event, newPage) => {
-    setPage(newPage);
+    gotoPage(newPage);
   }, []);
 
   const handleChangeRowsPerPage = useCallback((event) => {
     setPageSize(parseInt(event.target.value, 10));
-    setPage(0);
+    gotoPage(0);
   }, []);
 
   const renderRowSubComponent = useCallback(({ row }) => {
@@ -220,22 +209,25 @@ function TableComponent({
                   return (
                     <TableCell
                       key={column.id}
-                      {...column.getHeaderProps}
                       align={column.type === "number" ? "right" : "left"}
                       sortDirection={column.isSortedDesc ? "desc" : "asc"}
                     >
                       <TableSortLabel
                         sx={{ width: "100%" }}
-                        {...column.getSortByToggleProps()}
                         active={column.isSorted}
                         direction={column.isSortedDesc ? "desc" : "asc"}
+                        {...column.getHeaderProps(
+                          column.getSortByToggleProps()
+                        )}
                       >
                         {column.render("Header")}
                         {column.isSorted ? (
                           <Box component="span" sx={visuallyHidden}>
-                            {column.isSortedDesc
-                              ? "sorted descending"
-                              : "sorted ascending"}
+                            {column.isSorted
+                              ? column.isSortedDesc
+                                ? "sorted descending"
+                                : "sorted ascending"
+                              : ""}
                           </Box>
                         ) : null}
                       </TableSortLabel>
@@ -249,7 +241,7 @@ function TableComponent({
           ))}
         </TableHead>
         <TableBody {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {page.map((row) => {
             prepareRow(row);
 
             return (
@@ -341,8 +333,8 @@ function TableComponent({
             <TablePagination
               rowsPerPageOptions={[25, 50, 100]}
               count={total}
-              rowsPerPage={rowsPerPage}
-              page={page}
+              rowsPerPage={pageSize}
+              page={pageIndex}
               SelectProps={{
                 inputProps: {
                   "aria-label": "rows per page",
